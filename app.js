@@ -479,6 +479,139 @@ function requireLogin() {
     }
 }
 
+// ========== Contact Form Handler ==========
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleContactForm();
+    });
+}
+
+function handleContactForm() {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+    const messageBox = document.getElementById('messageBox');
+
+    // Validation
+    if (!name || !email || !message) {
+        showMessage('Please fill in all fields', 'error', messageBox);
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        showMessage('Please enter a valid email address', 'error', messageBox);
+        return;
+    }
+
+    if (message.length > 100) {
+        showMessage('Message must be 100 characters or less', 'error', messageBox);
+        return;
+    }
+
+    // Simulate sending message
+    showMessage('Sending your message...', 'info', messageBox);
+
+    setTimeout(() => {
+        // Store contact message (in production, this would be sent to backend)
+        const contactMessage = {
+            name,
+            email,
+            message,
+            timestamp: new Date().toISOString()
+        };
+
+        // Store in localStorage for demo
+        const messages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+        messages.push(contactMessage);
+        localStorage.setItem('contactMessages', JSON.stringify(messages));
+
+        showMessage('Thank you for your message! We\'ll get back to you soon.', 'success', messageBox);
+
+        // Clear form
+        contactForm.reset();
+    }, 1500);
+}
+
+// ========== AI Chat Handler ==========
+const aiInput = document.getElementById('aiInput');
+const aiSendBtn = document.getElementById('aiSendBtn');
+const aiMessages = document.getElementById('aiMessages');
+
+if (aiInput && aiSendBtn && aiMessages) {
+    aiSendBtn.addEventListener('click', handleAISend);
+    aiInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            handleAISend();
+        }
+    });
+
+    // Initialize with welcome message
+    addAIMessage('Hello! I\'m your SecureBank AI assistant. How can I help you today?', 'bot');
+}
+
+function handleAISend() {
+    const message = aiInput.value.trim();
+    if (!message) return;
+
+    // Add user message
+    addAIMessage(message, 'user');
+
+    // Clear input
+    aiInput.value = '';
+
+    // Simulate AI response
+    setTimeout(() => {
+        const response = generateAIResponse(message);
+        addAIMessage(response, 'bot');
+    }, 1000);
+}
+
+function addAIMessage(text, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-message ${type}`;
+    messageDiv.textContent = text;
+    aiMessages.appendChild(messageDiv);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+function generateAIResponse(userMessage) {
+    const message = userMessage.toLowerCase();
+
+    // Simple keyword-based responses
+    if (message.includes('balance') || message.includes('account')) {
+        return 'To check your account balance, please log in to your dashboard. If you need help with login, I can guide you through that!';
+    }
+
+    if (message.includes('transfer') || message.includes('send money')) {
+        return 'You can transfer money securely through our online banking platform. Log in to your account and navigate to the transfers section.';
+    }
+
+    if (message.includes('loan') || message.includes('credit')) {
+        return 'We offer various loan options. Please visit our loans page or contact customer support for personalized assistance.';
+    }
+
+    if (message.includes('security') || message.includes('safe')) {
+        return 'Security is our top priority at SecureBank. We use bank-level encryption and multi-factor authentication to protect your data.';
+    }
+
+    if (message.includes('contact') || message.includes('support')) {
+        return 'You can reach our customer support at support@securebank.com or call 1-800-225-4764. We\'re here 24/7!';
+    }
+
+    if (message.includes('hello') || message.includes('hi')) {
+        return 'Hello! How can I assist you with your banking needs today?';
+    }
+
+    if (message.includes('bye') || message.includes('goodbye')) {
+        return 'Goodbye! Have a great day. Remember, SecureBank is always here to help.';
+    }
+
+    // Default response
+    return 'I\'m here to help with your banking questions. You can ask me about account balances, transfers, loans, security, or contact information. How else can I assist you?';
+}
+
 // ========== Page Load Handler ==========
 
 document.addEventListener('DOMContentLoaded', function() {

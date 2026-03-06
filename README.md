@@ -1,52 +1,287 @@
-# SecureBank - Modern Banking Platform
+# SecureBank - Banking Application
 
-A modern, secure banking web application with sign-up, login, and social authentication features using Google, Apple, and Microsoft OAuth.
+## Overview
+SecureBank is a modern, secure banking application built with HTML, CSS, and JavaScript. It features a complete authentication system with client-side storage, an attractive dashboard, and transaction management.
+
+🎯 **New in Version 2.0:**
+- ✅ Age field in signup form (18+ requirement)
+- ✅ Enhanced dashboard with multiple cards
+- ✅ OPay wallet integration
+- ✅ Transaction history with detailed information
+- ✅ Add money and transfer functionality
+- ✅ Real-time balance tracking
+- ✅ User profile display with age information
+- ✅ No server required - fully functional with localStorage
 
 ## Features
+- ✅ **User Authentication**: Secure signup and login system
+- ✅ **Age Verification**: Users must be 18+ to create an account
+- ✅ **User Profile**: Display user information including name, email, phone, and age
+- ✅ **Dashboard**: Attractive, modern dashboard with multiple cards and statistics
+- ✅ **Account Balance**: Real-time balance tracking
+- ✅ **Transaction History**: Complete transaction history with timestamps
+- ✅ **Wallet Integration**: Virtual wallet display with card information
+- ✅ **Add Money**: Functionality to add funds to your account
+- ✅ **Send Money**: Transfer funds to other users
+- ✅ **Responsive Design**: Works on desktop, tablet, and mobile devices
+- ✅ **Client-Side Authentication**: No server required - all data stored locally
 
-✨ **Authentication**
-- Email/Password Login & Sign Up
-- Google OAuth Integration
-- Apple Sign-In Support
-- Microsoft OAuth Support
-- Password Strength Validation
-- Email Validation
-- Remember Me Option
-- Forgot Password Link
+## Getting Started
 
-🔒 **Security**
-- Bot Verification on Site Access (reCAPTCHA v3)
-- Client-side Form Validation
-- Secure OAuth Implementation
-- LocalStorage for Session Management
+### Installation
+1. Clone or download the project files
+2. Ensure all files are in the same directory:
+   - `index.html`
+   - `login.html`
+   - `signup.html`
+   - `dashboard.html`
+   - `app.js`
+   - `styles.css`
 
-🎨 **User Interface**
-- Responsive Design (Mobile, Tablet, Desktop)
-- Modern Gradient UI Theme
-- Smooth Animations & Transitions
-- Feature Showcase on Landing Page
-- Professional Dashboard
-- Quick Access Options (Email, Apple, Google)
+### Running the Application
+1. Open `index.html` in a web browser
+2. Complete the reCAPTCHA verification (in test mode)
+3. Navigate to Login or Sign Up pages
 
-🔐 **Security**
-- Client-side Form Validation
-- Password Strength Requirements
-- Secure OAuth Implementation
-- LocalStorage for Session Management
+## Demo Credentials
+For quick testing without signup, use these demo credentials:
 
-## Project Structure
+**Email**: `demo@securebank.com`  
+**Password**: `Demo@123456`
 
+This demo account comes pre-loaded with:
+- Balance: $5,234.50
+- Sample transactions
+- Full user profile (Age: 28)
+
+## User Sign Up
+1. Click "Sign Up" on the landing page or login page
+2. Fill in all required fields:
+   - **First Name**: Your first name
+   - **Last Name**: Your last name
+   - **Email**: Valid email address
+   - **Phone**: Phone number (10-15 digits)
+   - **Age**: Must be 18 or older
+   - **Password**: At least 8 characters with uppercase, lowercase, and numbers
+3. Agree to terms and create account
+4. You'll be automatically logged in and redirected to the dashboard
+
+## User Login
+1. Enter your email and password
+2. Click "Login"
+3. You'll be redirected to your dashboard
+
+## Dashboard Features
+
+### Account Overview
+- **Account Balance**: Shows your current balance
+- **Transaction Count**: Total number of transactions
+- **Account Status**: Verification status
+- **Member Since**: Account creation date
+
+### User Profile
+Complete user information including:
+- Full name
+- Email address
+- Phone number
+- Age (newly added)
+- Account ID
+- Join date
+
+### My Wallet
+Virtual wallet displaying:
+- Card number
+- Current balance
+- Quick access to common actions:
+  - Add Money
+  - Send Money
+  - Mobile Top-up
+  - Pay Bills
+
+### Add Money
+Add funds to your account:
+1. Click "Add Money" button
+2. Enter amount
+3. Select payment method (Credit Card, Debit Card, Bank Transfer, PayPal)
+4. Confirm transaction
+5. Balance updates in real-time
+
+### Send Money
+Transfer money to other users:
+1. Click "Send Money" button
+2. Enter recipient's email
+3. Enter amount
+4. Add optional message
+5. Confirm transfer
+6. Transaction appears in history
+
+### Transaction History
+View all your transactions with:
+- Transaction type (credit/debit)
+- Amount
+- Description
+- Timestamp
+- Real-time updates
+
+## Password Requirements
+Passwords must contain:
+- ✅ At least 8 characters
+- ✅ At least one uppercase letter
+- ✅ At least one lowercase letter
+- ✅ At least one number
+
+Example valid passwords:
+- `Secure@123`
+- `Banking#2024`
+- `MyPass123`
+
+## Age Requirement
+- Minimum age: 18 years old
+- Maximum age: 120 years old
+- Age cannot be changed after signup (in current version)
+
+## Data Storage
+All data is stored locally in your browser using `localStorage`:
+- User accounts (in `allUsers` array)
+- User balances
+- Transaction history
+- Login sessions
+
+**Data Structure:**
+```javascript
+{
+  id: "unique_id",
+  firstName: "John",
+  lastName: "Doe",
+  email: "john@example.com",
+  phone: "+1 (555) 123-4567",
+  age: 28,
+  password: "hashed_password",
+  balance: 5234.50,
+  transactions: [...]
+}
 ```
-Banking-/
-├── index.html          # Landing page with features & bot verification
-├── login.html          # Login page with all auth options
-├── signup.html         # Sign up page with all auth options
-├── dashboard.html      # User dashboard (after login)
-├── styles.css          # All styling including captcha modal
-├── app.js              # Combined authentication & bot verification
-├── README.md           # This file
-└── .git/               # Git repository
-```
+
+**Note**: Data is device-specific and will be cleared if you clear browser cache.
+
+## Authentication
+The application implements client-side authentication with:
+- Email validation
+- Password verification against stored credentials
+- Session management via localStorage
+- Automatic logout functionality
+- Duplicate email prevention
+
+## Browser Compatibility
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers
+
+## Responsive Design
+The application is fully responsive and works on:
+- Desktop computers (1920px and above)
+- Tablets (768px - 1024px)
+- Mobile phones (< 768px)
+
+## Security Notes
+⚠️ **Important**: This is a demonstration/prototype application.
+- Passwords are stored in plain text (for demo purposes only)
+- No server-side encryption
+- No HTTPS communication
+- For production use, implement:
+  - Backend server
+  - Bcrypt password hashing
+  - JWT token authentication
+  - HTTPS encryption
+  - Database storage (PostgreSQL, MongoDB, etc.)
+  - PCI compliance
+  - Two-factor authentication (2FA)
+
+## Troubleshooting
+
+### Can't Login
+- Check that your email and password are correct
+- Ensure you've completed the signup process
+- Try the demo credentials: `demo@securebank.com` / `Demo@123456`
+- Make sure localStorage is enabled in your browser
+
+### Age Validation Error
+- Age must be between 18 and 120
+- Age is required during signup
+- Try entering a valid age
+
+### Balance Not Showing
+- Refresh the page (F5)
+- Check browser console for errors (F12)
+- Ensure localStorage is enabled
+- Log out and log back in
+
+### Can't Add Money
+- Check that you've entered a valid amount (>0)
+- Ensure you're logged in
+- Try clearing browser cache
+
+### Transactions Not Appearing
+- Refresh the page
+- Check that you've completed a transaction
+- Ensure localStorage is enabled
+- Log out and back in
+
+### reCAPTCHA Not Loading
+- Check your internet connection
+- Disable browser extensions that might block reCAPTCHA
+- Clear browser cache
+- Try a different browser
+
+## Features Coming Soon
+- 📱 Mobile app version
+- 💳 Real payment gateway integration
+- 📊 Advanced statistics and reports
+- 🔔 Push notifications
+- 📞 Customer support chat
+- 🌍 Multi-currency support
+- 🔐 Two-factor authentication (2FA)
+- 📈 Investment options
+- 💰 Savings goals
+- 📲 QR code payments
+
+## Development Notes
+
+### File Structure
+- **index.html**: Landing page with bot verification
+- **login.html**: Login form with validation
+- **signup.html**: Signup form with age field
+- **dashboard.html**: Main user dashboard
+- **app.js**: Authentication and utility functions
+- **styles.css**: All styling and responsive design
+
+### Key Functions
+- `handleEmailLogin()`: Process login
+- `handleEmailSignUp()`: Process signup with age validation
+- `validateAge()`: Verify age is 18+
+- `processAddMoney()`: Add funds to account
+- `processTransfer()`: Transfer money between users
+- `loadDashboard()`: Load user data and render dashboard
+
+### localStorage Keys
+- `allUsers`: Array of all registered users
+- `currentUser`: Currently logged in user
+- `isLoggedIn`: Login status flag
+- `userVerified`: reCAPTCHA verification status
+
+## Contact & Support
+For questions or feedback, please contact the development team.
+
+## License
+This project is provided as-is for educational and demonstration purposes.
+
+---
+
+**Last Updated**: March 2026  
+**Version**: 2.0  
+**Status**: Active Development
 
 ## File Descriptions
 

@@ -5,6 +5,484 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - SecureBank</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .dashboard-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn-secondary {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .action-btn-secondary:hover {
+            background: #f0f0f0;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card.gradient {
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card.gradient-pink {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .card.gradient-blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .card.gradient-green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            font-size: 12px;
+            opacity: 0.8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        .full-card {
+            grid-column: 1 / -1;
+        }
+
+        .user-profile {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .user-profile h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .profile-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .profile-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .transactions-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .transactions-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: #f0f0f0;
+        }
+
+        .transaction-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transaction-type {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .transaction-time {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .transaction-amount.debit {
+            color: #f5576c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .opay-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .opay-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .opay-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .opay-card-number {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin: 20px 0;
+        }
+
+        .opay-card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .opay-balance {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .opay-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .opay-option {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .opay-option:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .opay-option-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .opay-option-label {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .modal-footer button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-footer .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -19,35 +497,397 @@
     </nav>
 
     <!-- Dashboard Content -->
-    <div style="max-width: 1200px; margin: 50px auto; padding: 20px;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <h1>Welcome to SecureBank Dashboard</h1>
-            <p id="welcomeMessage" style="font-size: 18px; color: #666; margin: 20px 0;">
-                Loading...
-            </p>
-
-            <!-- Dashboard Cards -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px;">
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px;">
-                    <h3>Account Balance</h3>
-                    <p style="font-size: 32px; margin: 15px 0;">$5,234.50</p>
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h1 id="welcomeMessage">Welcome back!</h1>
+                    <p id="lastLoginMessage">Your account is secure</p>
                 </div>
-
-                <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 12px;">
-                    <h3>Recent Transactions</h3>
-                    <p style="font-size: 28px; margin: 15px 0;">5</p>
-                </div>
-
-                <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 30px; border-radius: 12px;">
-                    <h3>Cards</h3>
-                    <p style="font-size: 28px; margin: 15px 0;">2</p>
+                <div class="quick-actions">
+                    <button class="action-btn action-btn-primary" onclick="openAddMoneyModal()">💳 Add Money</button>
+                    <button class="action-btn action-btn-secondary" onclick="openTransferModal()">📤 Transfer</button>
                 </div>
             </div>
 
-            <!-- Account Info -->
-            <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <h2>Account Information</h2>
-                <div id="accountInfo" style="margin-top: 20px;">
+            <!-- Stats Cards -->
+            <div class="cards-grid">
+                <div class="card gradient">
+                    <h3>Account Balance</h3>
+                    <div class="card-value" id="balanceDisplay">$0.00</div>
+                    <div class="card-footer">
+                        <span>Total available</span>
+                        <span class="card-icon">💰</span>
+                    </div>
+                </div>
+
+                <div class="card gradient-pink">
+                    <h3>Total Transactions</h3>
+                    <div class="card-value" id="transactionCount">0</div>
+                    <div class="card-footer">
+                        <span>All time</span>
+                        <span class="card-icon">📊</span>
+                    </div>
+                </div>
+
+                <div class="card gradient-blue">
+                    <h3>Account Status</h3>
+                    <div class="card-value" style="font-size: 24px;">Active</div>
+                    <div class="card-footer">
+                        <span>Verified & Secure</span>
+                        <span class="card-icon">✅</span>
+                    </div>
+                </div>
+
+                <div class="card gradient-green">
+                    <h3>Member Since</h3>
+                    <div class="card-value" style="font-size: 18px;" id="memberSince">Today</div>
+                    <div class="card-footer">
+                        <span>Account age</span>
+                        <span class="card-icon">📅</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Profile Section -->
+            <div class="user-profile">
+                <h2>👤 Account Information</h2>
+                <div class="profile-grid">
+                    <div class="profile-item">
+                        <div class="profile-label">Full Name</div>
+                        <div class="profile-value" id="fullName">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Email Address</div>
+                        <div class="profile-value" id="emailDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Phone Number</div>
+                        <div class="profile-value" id="phoneDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Age</div>
+                        <div class="profile-value" id="ageDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Account ID</div>
+                        <div class="profile-value" id="accountId">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Member Since</div>
+                        <div class="profile-value" id="joinDate">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Section -->
+            <div class="opay-section">
+                <h2>💳 My Wallet</h2>
+                <div class="opay-card">
+                    <div style="font-size: 24px; color: rgba(255,255,255,0.8);">Wallet Card</div>
+                    <div class="opay-card-number" id="opayCardNumber">3890 2930 9340 2039</div>
+                    <div class="opay-card-info">
+                        <div>
+                            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">BALANCE</div>
+                            <div class="opay-balance" id="opayBalance">$0.00</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">VALID CARD</div>
+                            <div>12/25</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="opay-options">
+                    <div class="opay-option" onclick="openAddMoneyModal()">
+                        <div class="opay-option-icon">➕</div>
+                        <div class="opay-option-label">Add Money</div>
+                    </div>
+                    <div class="opay-option" onclick="openTransferModal()">
+                        <div class="opay-option-icon">📤</div>
+                        <div class="opay-option-label">Send Money</div>
+                    </div>
+                    <div class="opay-option" onclick="alert('Mobile Top-up Coming Soon')">
+                        <div class="opay-option-icon">📱</div>
+                        <div class="opay-option-label">Mobile Top-up</div>
+                    </div>
+                    <div class="opay-option" onclick="alert('Bill Pay Coming Soon')">
+                        <div class="opay-option-icon">📃</div>
+                        <div class="opay-option-label">Pay Bills</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="transactions-section">
+                <h2>📝 Recent Transactions</h2>
+                <div id="transactionsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No transactions yet. Add money to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Money Modal -->
+    <div id="addMoneyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Money</h2>
+                <button class="modal-close" onclick="closeAddMoneyModal()">&times;</button>
+            </div>
+            <div id="addMoneySuccess" class="success-message">Money added successfully! ✅</div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="addMoneyAmount" placeholder="Enter amount" min="1" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="paymentMethod" style="width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 14px;">
+                    <option>Credit Card</option>
+                    <option>Debit Card</option>
+                    <option>Bank Transfer</option>
+                    <option>PayPal</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddMoneyModal()">Cancel</button>
+                <button class="btn-primary" onclick="processAddMoney()">Add Money</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Send Money</h2>
+                <button class="modal-close" onclick="closeTransferModal()">&times;</button>
+            </div>
+            <div id="transferSuccess" class="success-message">Money transferred successfully! ✅</div>
+            <div class="form-group">
+                <label>Recipient Email</label>
+                <input type="email" id="recipientEmail" placeholder="recipient@email.com">
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="transferAmount" placeholder="Enter amount" min="1" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Message (Optional)</label>
+                <input type="text" id="transferMessage" placeholder="Add a note">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeTransferModal()">Cancel</button>
+                <button class="btn-primary" onclick="processTransfer()">Send Money</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            if (!localStorage.getItem('isLoggedIn')) {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Load user data on page load
+        function loadDashboard() {
+            checkAuth();
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update welcome message
+            document.getElementById('welcomeMessage').innerText = `Welcome back, ${user.firstName}!`;
+            document.getElementById('userEmail').innerText = user.email;
+            
+            // Update profile section
+            document.getElementById('fullName').innerText = `${user.firstName} ${user.lastName}`;
+            document.getElementById('emailDisplay').innerText = user.email;
+            document.getElementById('phoneDisplay').innerText = user.phone;
+            document.getElementById('ageDisplay').innerText = `${user.age} years old`;
+            document.getElementById('accountId').innerText = user.id.substring(0, 8) + '****';
+            
+            // Format date
+            const signupDate = new Date(user.signupTime);
+            document.getElementById('joinDate').innerText = signupDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('memberSince').innerText = signupDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            // Update balance (load from localStorage or default to 0)
+            const balance = user.balance || 0;
+            document.getElementById('balanceDisplay').innerText = `$${balance.toFixed(2)}`;
+            document.getElementById('opayBalance').innerText = `$${balance.toFixed(2)}`;
+
+            // Update transaction count
+            const transactions = user.transactions || [];
+            document.getElementById('transactionCount').innerText = transactions.length;
+
+            // Load transactions
+            loadTransactions(transactions);
+        }
+
+        function loadTransactions(transactions) {
+            const transactionsList = document.getElementById('transactionsList');
+            
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No transactions yet. Add money to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            transactionsList.innerHTML = transactions.reverse().map(trans => `
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon">${trans.type === 'credit' ? '📥' : '📤'}</div>
+                        <div class="transaction-detail">
+                            <div class="transaction-type">${trans.description}</div>
+                            <div class="transaction-time">${new Date(trans.date).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${trans.type === 'debit' ? 'debit' : ''}">
+                        ${trans.type === 'credit' ? '+' : '-'}$${Math.abs(trans.amount).toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddMoneyModal() {
+            document.getElementById('addMoneyModal').classList.add('show');
+        }
+
+        function closeAddMoneyModal() {
+            document.getElementById('addMoneyModal').classList.remove('show');
+            document.getElementById('addMoneyAmount').value = '';
+            document.getElementById('addMoneySuccess').classList.remove('show');
+        }
+
+        function openTransferModal() {
+            document.getElementById('transferModal').classList.add('show');
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transferModal').classList.remove('show');
+            document.getElementById('recipientEmail').value = '';
+            document.getElementById('transferAmount').value = '';
+            document.getElementById('transferMessage').value = '';
+            document.getElementById('transferSuccess').classList.remove('show');
+        }
+
+        function processAddMoney() {
+            const amount = parseFloat(document.getElementById('addMoneyAmount').value);
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            user.balance = (user.balance || 0) + amount;
+            user.transactions = user.transactions || [];
+            user.transactions.push({
+                type: 'credit',
+                amount: amount,
+                description: 'Money Added',
+                date: new Date().toISOString()
+            });
+
+            // Update in allUsers
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            const userIndex = allUsers.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                allUsers[userIndex] = user;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            document.getElementById('addMoneySuccess').classList.add('show');
+            document.getElementById('balanceDisplay').innerText = `$${user.balance.toFixed(2)}`;
+            document.getElementById('opayBalance').innerText = `$${user.balance.toFixed(2)}`;
+            document.getElementById('transactionCount').innerText = user.transactions.length;
+            loadTransactions(user.transactions);
+
+            setTimeout(() => {
+                closeAddMoneyModal();
+            }, 2000);
+        }
+
+        function processTransfer() {
+            const email = document.getElementById('recipientEmail').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const message = document.getElementById('transferMessage').value;
+
+            if (!email || !amount || amount <= 0) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+
+            if (user.balance < amount) {
+                alert('Insufficient balance');
+                return;
+            }
+
+            user.balance -= amount;
+            user.transactions = user.transactions || [];
+            user.transactions.push({
+                type: 'debit',
+                amount: amount,
+                description: `Transfer to ${email}`,
+                date: new Date().toISOString()
+            });
+
+            // Update in allUsers
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            const userIndex = allUsers.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                allUsers[userIndex] = user;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            document.getElementById('transferSuccess').classList.add('show');
+            document.getElementById('balanceDisplay').innerText = `$${user.balance.toFixed(2)}`;
+            document.getElementById('opayBalance').innerText = `$${user.balance.toFixed(2)}`;
+            document.getElementById('transactionCount').innerText = user.transactions.length;
+            loadTransactions(user.transactions);
+
+            setTimeout(() => {
+                closeTransferModal();
+            }, 2000);
+        }
+
+        // Load dashboard on page load
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addMoneyModal');
+            const transferModal = document.getElementById('transferModal');
+            if (event.target == addModal) {
+                closeAddMoneyModal();
+            }
+            if (event.target == transferModal) {
+                closeTransferModal();
+            }
+        }
+    </script>
+</body>
+</html>
                     Loading...
                 </div>
             </div>

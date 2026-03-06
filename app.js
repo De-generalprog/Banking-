@@ -127,20 +127,25 @@ function handleEmailLogin() {
     // Simulate login process
     showMessage('Logging in...', 'info', messageBox);
 
-    // In a real application, you would send this to a backend server
     setTimeout(() => {
-        // Store user data in localStorage (for demo purposes)
-        const user = {
-            email: email,
-            loginTime: new Date().toISOString()
-        };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        showMessage('Login successful! Redirecting...', 'success', messageBox);
+        // Find user in allUsers
+        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        const user = allUsers.find(u => u.email === email && u.password === password);
 
-        // Redirect to dashboard after 1.5 seconds
-        setTimeout(() => {
-            window.location.href = 'dashboard.html'; // You can create a dashboard page
-        }, 1500);
+        if (user) {
+            // Store user data in localStorage
+            const { password, ...userWithoutPassword } = user;
+            localStorage.setItem('currentUser', JSON.stringify(userWithoutPassword));
+            localStorage.setItem('isLoggedIn', 'true');
+            showMessage('Login successful! Redirecting...', 'success', messageBox);
+
+            // Redirect to dashboard after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        } else {
+            showMessage('Invalid email or password. Please try again.', 'error', messageBox);
+        }
     }, 1500);
 }
 
@@ -150,19 +155,25 @@ function handleEmailSignUp() {
     const lastName = document.getElementById('lastName').value;
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
+    const age = document.getElementById('age').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     const terms = document.querySelector('input[name="terms"]').checked;
     const messageBox = document.getElementById('messageBox');
 
     // Validation
-    if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !phone || !age || !password || !confirmPassword) {
         showMessage('Please fill in all fields', 'error', messageBox);
         return;
     }
 
     if (!validateEmail(email)) {
         showMessage('Please enter a valid email address', 'error', messageBox);
+        return;
+    }
+
+    if (!validateAge(age)) {
+        showMessage('You must be at least 18 years old to open an account', 'error', messageBox);
         return;
     }
 
@@ -187,24 +198,44 @@ function handleEmailSignUp() {
         return;
     }
 
+    // Check if email already exists
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    if (allUsers.some(u => u.email === email)) {
+        showMessage('This email is already registered. Please login instead.', 'error', messageBox);
+        return;
+    }
+
     // Simulate signup process
     showMessage('Creating account...', 'info', messageBox);
 
     setTimeout(() => {
         // Save user data (in real app, send to backend)
         const user = {
+            id: Date.now().toString(),
             firstName: firstName,
             lastName: lastName,
             email: email,
             phone: phone,
-            signupTime: new Date().toISOString()
+            age: parseInt(age),
+            password: password, // In production, hash this before storing
+            signupTime: new Date().toISOString(),
+            balance: 0,
+            transactions: []
         };
+        
+        // Store in allUsers list
+        allUsers.push(user);
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+        
+        // Automatically log in the new user
         localStorage.setItem('currentUser', JSON.stringify(user));
-        showMessage('Account created successfully! Redirecting to login...', 'success', messageBox);
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        showMessage('Account created successfully! Redirecting to dashboard...', 'success', messageBox);
 
-        // Redirect to login page after 1.5 seconds
+        // Redirect to dashboard after 1.5 seconds
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = 'dashboard.html';
         }, 1500);
     }, 1500);
 }
@@ -389,6 +420,10 @@ function validateEmail(email) {
     return emailRegex.test(email);
 }
 
+function validateAge(age) {
+    return parseInt(age) >= 18 && parseInt(age) <= 120;
+}
+
 function validatePassword(password) {
     // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
@@ -433,6 +468,7 @@ function getCurrentUser() {
 // Logout user
 function logoutUser() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
     window.location.href = 'index.html';
 }
 
@@ -446,6 +482,49 @@ function requireLogin() {
 // ========== Page Load Handler ==========
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize demo data if no users exist
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    if (allUsers.length === 0) {
+        const demoUser = {
+            id: '1000000001',
+            firstName: 'Demo',
+            lastName: 'User',
+            email: 'demo@securebank.com',
+            phone: '+1 (555) 123-4567',
+            age: 28,
+            password: 'Demo@123456', // Demo password
+            signupTime: new Date().toISOString(),
+            balance: 5234.50,
+            transactions: [
+                {
+                    type: 'credit',
+                    amount: 5000,
+                    description: 'Initial Deposit',
+                    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    type: 'debit',
+                    amount: 150,
+                    description: 'Transfer to john@example.com',
+                    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    type: 'credit',
+                    amount: 400,
+                    description: 'Salary Deposit',
+                    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    type: 'debit',
+                    amount: 15.50,
+                    description: 'Online Purchase at Amazon',
+                    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ]
+        };
+        localStorage.setItem('allUsers', JSON.stringify([demoUser]));
+    }
+
     // Initialize captcha verification on index page
     if (document.getElementById('captchaModal')) {
         // Check if reCAPTCHA is loaded

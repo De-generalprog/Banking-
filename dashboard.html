@@ -559,6 +559,14 @@
                         <div class="profile-value" id="fullName">--</div>
                     </div>
                     <div class="profile-item">
+                        <div class="profile-label">Username</div>
+                        <div class="profile-value" id="usernameDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Username</div>
+                        <div class="profile-value" id="usernameDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
                         <div class="profile-label">Email Address</div>
                         <div class="profile-value" id="emailDisplay">--</div>
                     </div>
@@ -708,11 +716,16 @@
             }
 
             // Update welcome message
-            document.getElementById('welcomeMessage').innerText = `Welcome back, ${user.firstName}!`;
-            document.getElementById('userEmail').innerText = user.email;
+            // show username if available, otherwise fall back to first name
+            const displayName = user.username || user.firstName || 'User';
+            document.getElementById('welcomeMessage').innerText = `Welcome back, ${displayName}!`;
+            document.getElementById('userEmail').innerText = displayName;
             
             // Update profile section
             document.getElementById('fullName').innerText = `${user.firstName} ${user.lastName}`;
+            if (document.getElementById('usernameDisplay')) {
+                document.getElementById('usernameDisplay').innerText = user.username || '--';
+            }
             document.getElementById('emailDisplay').innerText = user.email;
             document.getElementById('phoneDisplay').innerText = user.phone;
             document.getElementById('ageDisplay').innerText = `${user.age} years old`;
@@ -912,8 +925,9 @@
             if (user) {
                 // Update welcome message
                 const name = user.name || user.firstName + ' ' + user.lastName || 'User';
-                document.getElementById('welcomeMessage').textContent = `Welcome back, ${name}!`;
-                document.getElementById('userEmail').textContent = user.email;
+                const displayName2 = user.username || name || 'User';
+                document.getElementById('welcomeMessage').textContent = `Welcome back, ${displayName2}!`;
+                document.getElementById('userEmail').textContent = displayName2;
 
                 // Display account info
                 let accountHTML = '<ul style="list-style: none; padding: 0;">';

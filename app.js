@@ -94,7 +94,7 @@ const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        handleEmailLogin();
+        handleLogin();
     });
 }
 
@@ -107,20 +107,24 @@ if (signupForm) {
     });
 }
 
-// ========== Email/Password Login ==========
-function handleEmailLogin() {
-    const email = document.getElementById('email').value;
+// ========== Username/Password Login ==========
+function handleLogin() {
+    const credential = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const messageBox = document.getElementById('messageBox');
 
     // Validation
-    if (!email || !password) {
+    if (!credential || !password) {
         showMessage('Please fill in all fields', 'error', messageBox);
         return;
     }
 
-    if (!validateEmail(email)) {
-        showMessage('Please enter a valid email address', 'error', messageBox);
+    // Check if credential is a valid email or username
+    const isEmail = validateEmail(credential);
+    const isUsername = validateUsername(credential);
+
+    if (!isEmail && !isUsername) {
+        showMessage('Please enter a valid email address or username (3–20 letters, numbers, or underscores)', 'error', messageBox);
         return;
     }
 
@@ -130,7 +134,7 @@ function handleEmailLogin() {
     setTimeout(() => {
         // Find user in allUsers
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-        const user = allUsers.find(u => u.email === email && u.password === password);
+        const user = allUsers.find(u => (u.email === credential || u.username === credential) && u.password === password);
 
         if (user) {
             // Store user data in localStorage
@@ -144,7 +148,7 @@ function handleEmailLogin() {
                 window.location.href = 'dashboard.html';
             }, 1500);
         } else {
-            showMessage('Invalid email or password. Please try again.', 'error', messageBox);
+            showMessage('Invalid username or password. Please try again.', 'error', messageBox);
         }
     }, 1500);
 }
@@ -153,6 +157,7 @@ function handleEmailLogin() {
 function handleEmailSignUp() {
     const firstName = document.getElementById('firstName').value;
     const lastName = document.getElementById('lastName').value;
+    const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const phone = document.getElementById('phone').value;
     const age = document.getElementById('age').value;
@@ -162,8 +167,20 @@ function handleEmailSignUp() {
     const messageBox = document.getElementById('messageBox');
 
     // Validation
-    if (!firstName || !lastName || !email || !phone || !age || !password || !confirmPassword) {
+    if (!username || !firstName || !lastName || !email || !phone || !age || !password || !confirmPassword) {
         showMessage('Please fill in all fields', 'error', messageBox);
+        return;
+    }
+
+    if (!validateUsername(username)) {
+        showMessage('Username must be 3–20 characters and contain only letters, numbers, or underscores', 'error', messageBox);
+        return;
+    }
+
+    // Check username/email uniqueness
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    if (allUsers.some(u => u.username === username)) {
+        showMessage('Username already taken. Please choose another.', 'error', messageBox);
         return;
     }
 
@@ -199,7 +216,6 @@ function handleEmailSignUp() {
     }
 
     // Check if email already exists
-    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
     if (allUsers.some(u => u.email === email)) {
         showMessage('This email is already registered. Please login instead.', 'error', messageBox);
         return;
@@ -214,6 +230,7 @@ function handleEmailSignUp() {
             id: Date.now().toString(),
             firstName: firstName,
             lastName: lastName,
+            username: username,
             email: email,
             phone: phone,
             age: parseInt(age),
@@ -259,6 +276,7 @@ function handleGoogleLogin(response) {
         // Store user data
         localStorage.setItem('currentUser', JSON.stringify({
             name: userData.name,
+            username: userData.email ? userData.email.split('@')[0] : userData.name.replace(/\s+/g,'').toLowerCase(),
             email: userData.email,
             picture: userData.picture,
             authProvider: 'google',
@@ -289,6 +307,8 @@ function handleGoogleSignUp(response) {
 
         localStorage.setItem('currentUser', JSON.stringify({
             name: userData.name,
+            username: userData.email ? userData.email.split('@')[0] : userData.name.replace(/\s+/g,'').toLowerCase(),
+            username: userData.email ? userData.email.split('@')[0] : userData.name.replace(/\s+/g,'').toLowerCase(),
             email: userData.email,
             picture: userData.picture,
             authProvider: 'google',
@@ -318,6 +338,7 @@ function handleMicrosoftLogin() {
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
             email: 'user@microsoft.com',
+            username: 'user',
             authProvider: 'microsoft',
             loginTime: new Date().toISOString()
         }));
@@ -336,6 +357,7 @@ function handleMicrosoftSignUp() {
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
             email: 'newuser@microsoft.com',
+            username: 'newuser',
             authProvider: 'microsoft',
             signupTime: new Date().toISOString()
         }));
@@ -359,6 +381,7 @@ function handleAppleLogin() {
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
             email: 'user@icloud.com',
+            username: 'user',
             authProvider: 'apple',
             loginTime: new Date().toISOString()
         }));
@@ -377,6 +400,7 @@ function handleAppleSignUp() {
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
             email: 'newuser@icloud.com',
+            username: 'newuser',
             authProvider: 'apple',
             signupTime: new Date().toISOString()
         }));
@@ -420,6 +444,12 @@ function validateEmail(email) {
     return emailRegex.test(email);
 }
 
+function validateUsername(username) {
+    // Username must be 3–20 characters and may contain letters, numbers, and underscores
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    return usernameRegex.test(username);
+}
+
 function validateAge(age) {
     return parseInt(age) >= 18 && parseInt(age) <= 120;
 }
@@ -431,9 +461,10 @@ function validatePassword(password) {
 }
 
 function validatePhone(phone) {
-    // Basic phone validation - remove spaces and special characters
-    const cleanPhone = phone.replace(/\D/g, '');
-    return cleanPhone.length >= 10 && cleanPhone.length <= 15;
+    // Basic phone validation - allow optional + and 10–15 digits
+    const clean = phone.replace(/[\s\-()]/g, '');
+    const phoneRegex = /^\+?\d{10,15}$/;
+    return phoneRegex.test(clean);
 }
 
 // ========== Message Display ==========
@@ -622,6 +653,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: '1000000001',
             firstName: 'Demo',
             lastName: 'User',
+            username: 'demouser',
             email: 'demo@securebank.com',
             phone: '+1 (555) 123-4567',
             age: 28,

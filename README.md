@@ -6,7 +6,7 @@ SecureBank is a modern, secure banking application built with HTML, CSS, and Jav
 🎯 **New in Version 2.0:**
 - ✅ Age field in signup form (18+ requirement)
 - ✅ Enhanced dashboard with multiple cards
-- ✅ OPay wallet integration
+- ✅ Wallet integration
 - ✅ Transaction history with detailed information
 - ✅ Add money and transfer functionality
 - ✅ Real-time balance tracking

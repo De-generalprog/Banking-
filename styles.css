@@ -76,8 +76,34 @@ a {
     border-color: #0078d4;
 }
 
-.btn-facebook {
-    border-color: #1877f2;
+.btn-apple {
+    border-color: #000000;
+    background-color: #000000;
+    color: white;
+}
+
+.btn-apple:hover {
+    background-color: #333333;
+}
+
+.btn-email {
+    border-color: #667eea;
+    background-color: #667eea;
+    color: white;
+}
+
+.btn-email:hover {
+    background-color: #5568d3;
+}
+
+.btn-google {
+    border-color: #4285f4;
+    background-color: #4285f4;
+    color: white;
+}
+
+.btn-google:hover {
+    background-color: #3367d6;
 }
 
 /* ========== Navigation ========== */
@@ -163,6 +189,33 @@ a {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ========== Quick Access Section ========== */
+.quick-access {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.quick-access-title {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.quick-access-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quick-access-buttons .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-width: 180px;
 }
 
 /* ========== Features Section ========== */
@@ -530,7 +583,108 @@ a {
     color: #5568d3;
 }
 
-/* ========== Responsive ========== */
+/* ========== Captcha Modal ========== */
+.captcha-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.captcha-content {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.captcha-header h2 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.captcha-header p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.captcha-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.captcha-loader p {
+    color: #666;
+    margin: 0;
+}
+
+.captcha-message {
+    padding: 10px;
+    border-radius: 6px;
+    margin: 15px 0;
+    display: none;
+}
+
+.captcha-message.success {
+    display: block;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.captcha-message.error {
+    display: block;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.captcha-footer {
+    margin-top: 20px;
+}
+
+.recaptcha-notice {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.recaptcha-notice a {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 @media (max-width: 768px) {
     .hero-content h1 {
         font-size: 36px;

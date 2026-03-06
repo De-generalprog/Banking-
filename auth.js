@@ -220,39 +220,71 @@ function handleMicrosoftSignUp() {
     }, 2000);
 }
 
-// ========== Facebook OAuth Handler ==========
-function handleFacebookLogin() {
+// ========== Apple OAuth Handler ==========
+function handleAppleLogin() {
     const messageBox = document.getElementById('messageBox');
-    showMessage('Integrating with Facebook... (Demo mode)', 'info', messageBox);
+    showMessage('Integrating with Apple... (Demo mode)', 'info', messageBox);
     
-    // In production, implement Facebook login using Facebook SDK
-    // https://developers.facebook.com/docs/facebook-login/web
-    console.log('Facebook login integration required');
+    // In production, implement Apple Sign-In using Apple's Sign-In JS
+    // https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js
+    console.log('Apple login integration required');
     
-    // Demo: Simulate Facebook login
+    // Demo: Simulate Apple login
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
-            email: 'user@facebook.com',
-            authProvider: 'facebook',
+            email: 'user@icloud.com',
+            authProvider: 'apple',
             loginTime: new Date().toISOString()
         }));
-        window.location.href = 'dashboard.html';
+        showMessage('Apple login successful! Redirecting...', 'success', messageBox);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
     }, 2000);
 }
 
-function handleFacebookSignUp() {
+function handleAppleSignUp() {
     const messageBox = document.getElementById('messageBox');
-    showMessage('Creating account with Facebook... (Demo mode)', 'info', messageBox);
+    showMessage('Creating account with Apple... (Demo mode)', 'info', messageBox);
     
-    // In production, implement Facebook signup using Facebook SDK
+    // In production, implement Apple Sign-In using Apple's Sign-In JS
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
-            email: 'newuser@facebook.com',
-            authProvider: 'facebook',
+            email: 'newuser@icloud.com',
+            authProvider: 'apple',
             signupTime: new Date().toISOString()
         }));
-        window.location.href = 'dashboard.html';
+        showMessage('Account created with Apple! Redirecting...', 'success', messageBox);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
     }, 2000);
+}
+
+// ========== Quick Access Handlers ==========
+function handleEmailAccess() {
+    // Redirect to login page with email focus
+    window.location.href = 'login.html#email';
+}
+
+function handleAppleAccess() {
+    // Redirect to login page and trigger Apple login
+    window.location.href = 'login.html';
+    setTimeout(() => {
+        handleAppleLogin();
+    }, 500);
+}
+
+function handleGoogleAccess() {
+    // Redirect to login page and trigger Google login
+    window.location.href = 'login.html';
+    setTimeout(() => {
+        // Google login will be handled by the Google button on the login page
+        const googleButton = document.querySelector('.g_id_signin');
+        if (googleButton) {
+            googleButton.click();
+        }
+    }, 500);
 }
 
 // ========== Validation Functions ==========

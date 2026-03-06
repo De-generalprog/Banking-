@@ -7,12 +7,19 @@ A modern, secure banking web application with sign-up, login, and social authent
 ✨ **Authentication**
 - Email/Password Login & Sign Up
 - Google OAuth Integration
-- Microsoft OAuth Support  
+- Apple Sign-In Support
+- Microsoft OAuth Support
 - Facebook OAuth Support
 - Password Strength Validation
 - Email Validation
 - Remember Me Option
 - Forgot Password Link
+
+🔒 **Security**
+- Bot Verification on Site Access (reCAPTCHA v3)
+- Client-side Form Validation
+- Secure OAuth Implementation
+- LocalStorage for Session Management
 
 🎨 **User Interface**
 - Responsive Design (Mobile, Tablet, Desktop)
@@ -20,6 +27,7 @@ A modern, secure banking web application with sign-up, login, and social authent
 - Smooth Animations & Transitions
 - Feature Showcase on Landing Page
 - Professional Dashboard
+- Quick Access Options (Email, Apple, Google)
 
 🔐 **Security**
 - Client-side Form Validation

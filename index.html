@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureBank - Welcome</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- reCAPTCHA v3 Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <!-- Bot Verification Modal -->
+    <div id="captchaModal" class="captcha-modal">
+        <div class="captcha-content">
+            <div class="captcha-header">
+                <h2>Security Verification</h2>
+                <p>Please verify that you're not a robot</p>
+            </div>
+            <div class="captcha-body">
+                <div class="captcha-loader" id="captchaLoader">
+                    <div class="spinner"></div>
+                    <p>Verifying you are human...</p>
+                </div>
+                <div id="captchaMessage" class="captcha-message"></div>
+            </div>
+            <div class="captcha-footer">
+                <p class="recaptcha-notice">
+                    This site is protected by reCAPTCHA and the Google 
+                    <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a> and 
+                    <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a> apply.
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">SecureBank</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to SecureBank</h1>
+            <p>Fast, Secure, and Reliable Banking Solutions</p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-primary">Login</a>
+                <a href="signup.html" class="btn btn-secondary">Create Account</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <h2>Why Choose SecureBank?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Enterprise-grade security for your peace of mind</p>
+                <p>fast and relaible secure transaction with seemless experience</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast</h3>
+                <p>Instant transactions and quick account setup</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>Global</h3>
+                <p>Access your account from anywhere, anytime</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Easy Payments</h3>
+                <p>Multiple payment options and easy transfers</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>About SecureBank</h2>
+        <p>SecureBank is a modern digital banking platform designed to provide you with fast, secure, and convenient banking services. Whether you're managing personal finances or running a business, SecureBank has the tools you need.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 SecureBank. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="captcha-verify.js"></script>
+</body>
+</html>

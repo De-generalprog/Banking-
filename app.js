@@ -1,3 +1,92 @@
+// ========== Bot Verification on Site Access ==========
+
+// Configuration
+const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key - replace with your actual key
+const VERIFICATION_THRESHOLD = 0.5; // Minimum score to pass verification
+
+// Check if user has already been verified
+function isUserVerified() {
+    return localStorage.getItem('userVerified') === 'true';
+}
+
+// Mark user as verified
+function markUserVerified() {
+    localStorage.setItem('userVerified', 'true');
+}
+
+// Show captcha modal
+function showCaptchaModal() {
+    const modal = document.getElementById('captchaModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Hide captcha modal
+function hideCaptchaModal() {
+    const modal = document.getElementById('captchaModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Verify user with reCAPTCHA v3
+async function verifyUser() {
+    const loader = document.getElementById('captchaLoader');
+    const message = document.getElementById('captchaMessage');
+
+    if (loader) loader.style.display = 'block';
+    if (message) message.textContent = '';
+
+    try {
+        // Get reCAPTCHA token
+        const token = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'access_site' });
+
+        // For demo purposes, simulate verification with random score
+        // In production, send to backend for verification
+        const mockScore = Math.random(); // Random score between 0-1
+
+        setTimeout(() => {
+            if (mockScore >= VERIFICATION_THRESHOLD) {
+                // User passed verification
+                if (loader) loader.style.display = 'none';
+                if (message) {
+                    message.textContent = 'Verification successful! Welcome to SecureBank.';
+                    message.className = 'captcha-message success';
+                }
+
+                markUserVerified();
+                setTimeout(() => {
+                    hideCaptchaModal();
+                }, 1500);
+            } else {
+                // User failed verification - show retry option
+                if (loader) loader.style.display = 'none';
+                if (message) {
+                    message.innerHTML = `
+                        Verification failed. You may be a bot.<br>
+                        <button onclick="verifyUser()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Try Again</button>
+                    `;
+                    message.className = 'captcha-message error';
+                }
+            }
+        }, 2000);
+
+    } catch (error) {
+        console.error('Verification error:', error);
+        if (loader) loader.style.display = 'none';
+        if (message) {
+            message.innerHTML = `
+                Verification service error.<br>
+                <button onclick="verifyUser()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Retry</button>
+            `;
+            message.className = 'captcha-message error';
+        }
+    }
+}
+
 // ========== Form Handling ==========
 
 // Login Form Handler
@@ -47,7 +136,7 @@ function handleEmailLogin() {
         };
         localStorage.setItem('currentUser', JSON.stringify(user));
         showMessage('Login successful! Redirecting...', 'success', messageBox);
-        
+
         // Redirect to dashboard after 1.5 seconds
         setTimeout(() => {
             window.location.href = 'dashboard.html'; // You can create a dashboard page
@@ -112,7 +201,7 @@ function handleEmailSignUp() {
         };
         localStorage.setItem('currentUser', JSON.stringify(user));
         showMessage('Account created successfully! Redirecting to login...', 'success', messageBox);
-        
+
         // Redirect to login page after 1.5 seconds
         setTimeout(() => {
             window.location.href = 'login.html';
@@ -126,16 +215,16 @@ function handleGoogleLogin(response) {
     try {
         // The response contains the JWT token
         const userToken = response.credential;
-        
+
         // Decode JWT (you can use a library like jwt-decode for production)
         const base64Url = userToken.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
-        
+
         const userData = JSON.parse(jsonPayload);
-        
+
         // Store user data
         localStorage.setItem('currentUser', JSON.stringify({
             name: userData.name,
@@ -144,7 +233,7 @@ function handleGoogleLogin(response) {
             authProvider: 'google',
             loginTime: new Date().toISOString()
         }));
-        
+
         showMessage('Google login successful! Redirecting...', 'success', messageBox);
         setTimeout(() => {
             window.location.href = 'dashboard.html';
@@ -164,9 +253,9 @@ function handleGoogleSignUp(response) {
         const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
-        
+
         const userData = JSON.parse(jsonPayload);
-        
+
         localStorage.setItem('currentUser', JSON.stringify({
             name: userData.name,
             email: userData.email,
@@ -174,7 +263,7 @@ function handleGoogleSignUp(response) {
             authProvider: 'google',
             signupTime: new Date().toISOString()
         }));
-        
+
         showMessage('Account created with Google! Redirecting...', 'success', messageBox);
         setTimeout(() => {
             window.location.href = 'dashboard.html';
@@ -189,11 +278,11 @@ function handleGoogleSignUp(response) {
 function handleMicrosoftLogin() {
     const messageBox = document.getElementById('messageBox');
     showMessage('Integrating with Microsoft... (Demo mode)', 'info', messageBox);
-    
+
     // In production, implement Microsoft login using MSAL library
     // https://github.com/AzureAD/microsoft-authentication-library-for-js
     console.log('Microsoft login integration required');
-    
+
     // Demo: Simulate Microsoft login
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
@@ -201,14 +290,17 @@ function handleMicrosoftLogin() {
             authProvider: 'microsoft',
             loginTime: new Date().toISOString()
         }));
-        window.location.href = 'dashboard.html';
+        showMessage('Microsoft login successful! Redirecting...', 'success', messageBox);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
     }, 2000);
 }
 
 function handleMicrosoftSignUp() {
     const messageBox = document.getElementById('messageBox');
     showMessage('Creating account with Microsoft... (Demo mode)', 'info', messageBox);
-    
+
     // In production, implement Microsoft signup using MSAL library
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
@@ -216,7 +308,10 @@ function handleMicrosoftSignUp() {
             authProvider: 'microsoft',
             signupTime: new Date().toISOString()
         }));
-        window.location.href = 'dashboard.html';
+        showMessage('Account created with Microsoft! Redirecting...', 'success', messageBox);
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1500);
     }, 2000);
 }
 
@@ -224,11 +319,11 @@ function handleMicrosoftSignUp() {
 function handleAppleLogin() {
     const messageBox = document.getElementById('messageBox');
     showMessage('Integrating with Apple... (Demo mode)', 'info', messageBox);
-    
+
     // In production, implement Apple Sign-In using Apple's Sign-In JS
     // https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js
     console.log('Apple login integration required');
-    
+
     // Demo: Simulate Apple login
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
@@ -246,7 +341,7 @@ function handleAppleLogin() {
 function handleAppleSignUp() {
     const messageBox = document.getElementById('messageBox');
     showMessage('Creating account with Apple... (Demo mode)', 'info', messageBox);
-    
+
     // In production, implement Apple Sign-In using Apple's Sign-In JS
     setTimeout(() => {
         localStorage.setItem('currentUser', JSON.stringify({
@@ -310,10 +405,10 @@ function validatePhone(phone) {
 
 function showMessage(message, type, messageBox) {
     if (!messageBox) return;
-    
+
     messageBox.textContent = message;
     messageBox.className = 'message-box ' + type;
-    
+
     // Auto-hide success/info messages after 5 seconds
     if (type === 'success' || type === 'info') {
         setTimeout(() => {
@@ -351,6 +446,35 @@ function requireLogin() {
 // ========== Page Load Handler ==========
 
 document.addEventListener('DOMContentLoaded', function() {
-    // You can add additional initialization code here
-    console.log('Auth script loaded');
+    // Initialize captcha verification on index page
+    if (document.getElementById('captchaModal')) {
+        // Check if reCAPTCHA is loaded
+        if (typeof grecaptcha !== 'undefined') {
+            // If user is not verified, show captcha modal
+            if (!isUserVerified()) {
+                showCaptchaModal();
+                verifyUser();
+            }
+        } else {
+            // If reCAPTCHA fails to load after 5 seconds, show error
+            setTimeout(() => {
+                if (typeof grecaptcha === 'undefined' && !isUserVerified()) {
+                    showCaptchaModal();
+                    const loader = document.getElementById('captchaLoader');
+                    const message = document.getElementById('captchaMessage');
+
+                    if (loader) loader.style.display = 'none';
+                    if (message) {
+                        message.innerHTML = `
+                            reCAPTCHA failed to load. Please check your internet connection.<br>
+                            <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Reload Page</button>
+                        `;
+                        message.className = 'captcha-message error';
+                    }
+                }
+            }, 5000);
+        }
+    }
+
+    console.log('SecureBank app loaded');
 });

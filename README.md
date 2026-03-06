@@ -1,6 +1,6 @@
 # SecureBank - Modern Banking Platform
 
-A modern, secure banking web application with sign-up, login, and social authentication features using Google, Microsoft, and Facebook OAuth.
+A modern, secure banking web application with sign-up, login, and social authentication features using Google, Apple, and Microsoft OAuth.
 
 ## Features
 
@@ -9,7 +9,6 @@ A modern, secure banking web application with sign-up, login, and social authent
 - Google OAuth Integration
 - Apple Sign-In Support
 - Microsoft OAuth Support
-- Facebook OAuth Support
 - Password Strength Validation
 - Email Validation
 - Remember Me Option
@@ -39,12 +38,12 @@ A modern, secure banking web application with sign-up, login, and social authent
 
 ```
 Banking-/
-├── index.html          # Landing page with features
-├── login.html          # Login page
-├── signup.html         # Sign up page
+├── index.html          # Landing page with features & bot verification
+├── login.html          # Login page with all auth options
+├── signup.html         # Sign up page with all auth options
 ├── dashboard.html      # User dashboard (after login)
-├── styles.css          # All styling
-├── auth.js             # Authentication logic
+├── styles.css          # All styling including captcha modal
+├── app.js              # Combined authentication & bot verification
 ├── README.md           # This file
 └── .git/               # Git repository
 ```
@@ -93,16 +92,16 @@ Banking-/
 - Navigation bar styling
 - Mobile-first responsive design
 - Animations and transitions
+- Captcha modal styling
 
-### auth.js
-- Email/Password validation
-- Form submission handlers
-- Google OAuth implementation
-- Microsoft OAuth placeholder
-- Facebook OAuth placeholder
-- LocalStorage management
-- User session handling
-- Logout functionality
+### app.js
+- Combined authentication and bot verification logic
+- Email/password validation and form handling
+- Google, Apple, and Microsoft OAuth handlers
+- reCAPTCHA v3 bot verification on site access
+- User session management
+- Form validation functions
+- Message display system
 
 ## Setup Instructions
 
@@ -167,6 +166,62 @@ const msalConfig = {
 };
 ```
 
+### 4. Apple Sign-In Setup
+
+To enable Apple Sign-In:
+
+1. Go to [Apple Developer](https://developer.apple.com/)
+2. Create a new App ID and enable "Sign In with Apple"
+3. Create a Services ID for your website
+4. Configure your domain and return URLs
+5. Download the private key
+
+6. Add Apple Sign-In JS to your HTML:
+```html
+<script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+```
+
+7. Initialize Apple Sign-In:
+```javascript
+AppleID.auth.init({
+    clientId: 'YOUR_APPLE_CLIENT_ID',
+    scope: 'name email',
+    redirectURI: 'https://yourdomain.com/auth/apple',
+    state: 'origin:web'
+});
+```
+
+### 5. Bot Verification Setup
+
+To enable reCAPTCHA v3 verification on site access:
+
+1. Go to [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin)
+2. Create a new reCAPTCHA v3 site
+3. Add your domain(s) to the allowed domains
+4. Copy your Site Key
+
+5. Update `captcha-verify.js`:
+```javascript
+const RECAPTCHA_SITE_KEY = 'YOUR_ACTUAL_SITE_KEY';
+```
+
+6. For backend verification, implement `/api/verify-recaptcha` endpoint:
+```javascript
+// Example Node.js/Express endpoint
+app.post('/api/verify-recaptcha', async (req, res) => {
+    const { token, action } = req.body;
+    
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `secret=${YOUR_SECRET_KEY}&response=${token}`
+    });
+    
+    const result = await response.json();
+    res.json(result);
+});
+```
+
 ### 4. Facebook OAuth Setup
 
 To enable Facebook login:
@@ -183,8 +238,6 @@ To enable Facebook login:
 <script async defer crossorigin="anonymous" 
     src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0&appId=YOUR_APP_ID" nonce="abcd1234">
 </script>
-```
-
 ## Running the Application
 
 ### Local Development with Python
@@ -332,8 +385,8 @@ POST /api/login
 POST /api/logout
 POST /api/verify-email
 POST /api/google-login
+POST /api/apple-login
 POST /api/microsoft-login
-POST /api/facebook-login
 GET /api/dashboard
 ```
 

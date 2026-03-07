@@ -3,23 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant</title>
+    <title>AI Assistant - Community Financial Credit Union</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <a href="contactus.html" class="back-link">← Back</a>
-     <p class="contact-AI">Chat with our AI assistant!</p>
-                <div class="ai-chat">
-                    <div id="aiMessages" class="ai-messages"></div>
-                    <div class="ai-input-group">
-                        <input type="text" id="aiInput" placeholder="Ask our AI assistant..." maxlength="200">
-                        <button class="btn btn-secondary" id="aiSendBtn">Send</button>
-                    </div>
-                <!-- Message Display -->
-                <div id="messageBox" class="message-box"></div>
-                   <script src="app.js"></script>
+    <a href="contactus.html" class="back-link">← Back to Contact</a>
+    
+    <div class="ai-container">
+        <div class="ai-header">
+            <h1>🤖 Community Financial Credit Union AI Assistant</h1>
+            <p>Your intelligent banking companion available 24/7</p>
+        </div>
+        
+        <div class="ai-chat">
+            <div class="ai-capabilities">
+                <h3>I can help you with:</h3>
+                <div class="capabilities-list">
+                    <span class="capability" onclick="selectCapability('🔍 Account Issues')">🔍 Account Issues</span>
+                    <span class="capability" onclick="selectCapability('💸 Transaction Disputes')">💸 Transaction Disputes</span>
+                    <span class="capability" onclick="selectCapability('🔄 Money Transfers')">🔄 Money Transfers</span>
+                    <span class="capability" onclick="selectCapability('🏠 Loan Information')">🏠 Loan Information</span>
+                    <span class="capability" onclick="selectCapability('🔒 Security Concerns')">🔒 Security Concerns</span>
+                    <span class="capability" onclick="selectCapability('📞 Agent Connection')">📞 Agent Connection</span>
+                </div>
+            </div>
+            
+            <div id="aiMessages" class="ai-messages"></div>
+            
+            <div class="ai-input-group">
+                <input type="text" id="aiInput" placeholder="Ask me anything about your banking needs..." maxlength="200">
+                <button class="btn btn-primary" id="aiSendBtn">Send</button>
+            </div>
+            
+            <div class="ai-footer">
+                <p>Can't find what you need? <a href="contactus.html">Contact Support</a></p>
             </div>
         </div>
     </div>
+    
+    <script src="app.js"></script>
 </body>
 </html>

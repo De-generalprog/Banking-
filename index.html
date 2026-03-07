@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureBank - Welcome</title>
+    <title>Community Financial Credit Union - Welcome</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- reCAPTCHA v3 Script -->
+    <!-- reCAPTCHA v2 Script -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-    <!-- Bot Verification Modal -->
-    <div id="captchaModal" class="captcha-modal">
-        <div class="captcha-content">
+    <!-- Security Verification Overlay -->
+    <div id="captchaOverlay" class="captcha-overlay">
+        <div class="captcha-container">
             <div class="captcha-header">
-                <h2>Security Verification</h2>
-                <p>Please verify that you're not a robot</p>
+                <h2>🔒 Security Verification</h2>
+                <p>Please verify that you're not a robot to access Community Financial Credit Union</p>
             </div>
             <div class="captcha-body">
                 <div class="captcha-loader" id="captchaLoader">
@@ -22,20 +22,24 @@
                     <p>Verifying you are human...</p>
                 </div>
                 <div id="captchaMessage" class="captcha-message"></div>
+                <div class="captcha-widget">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onCaptchaSuccess"></div>
+                </div>
             </div>
             <div class="captcha-footer">
                 <p class="recaptcha-notice">
-                    This site is protected by reCAPTCHA and the Google 
-                    <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a> and 
+                    This site is protected by reCAPTCHA and the Google
+                    <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a> and
                     <a href="https://policies.google.com/terms" target="_blank">Terms of Service</a> apply.
                 </p>
             </div>
         </div>
     </div>
+
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">SecureBank</div>
+            <div class="logo">Community Financial <br> Credit Union</div>
             <ul class="nav-links">
                 <li><a href="#features">Features</a></li>
                 <li><a href="#about">About</a></li>
@@ -47,8 +51,8 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Welcome to SecureBank</h1>
-            <p>Fast, Secure, and Reliable Banking Solutions</p>
+            <h1>Welcome to Community Financial Credit Union</h1>
+            <p>Your Trusted Community Banking Partner</p>
             <div class="hero-buttons">
                 <a href="login.html" class="btn btn-primary">Login</a>
                 <a href="signup.html" class="btn btn-secondary">Sign Up</a>
@@ -74,7 +78,7 @@
 
     <!-- Features Section -->
     <section id="features" class="features">
-        <h2>Why Choose SecureBank?</h2>
+        <h2>Why Choose Community Financial Credit Union?</h2>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">🔒</div>
@@ -102,14 +106,14 @@
 
     <!-- About Section -->
     <section id="about" class="about">
-        <h2>About SecureBank</h2>
-        <p>SecureBank is a modern digital banking platform designed to provide you with fast, secure, and convenient banking services. Whether you're managing personal finances or running a business, SecureBank has the tools you need.</p>
+        <h2>About Community Financial Credit Union</h2>
+        <p>Community Financial Credit Union is a modern digital banking platform designed to provide you with fast, secure, and convenient banking services. Whether you're managing personal finances or running a business, Community Financial Credit Union has the tools you need.</p>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <p>&copy; 2026 SecureBank. All rights reserved.</p>
+            <p>&copy; 2026 Community Financial Credit Union. All rights reserved.</p>
             <ul class="footer-links">
                 <li><a href="#">Privacy Policy</a></li>
                 <li><a href="#">Terms of Service</a></li>

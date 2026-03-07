@@ -1,28 +1,36 @@
-# SecureBank - Banking Application
+# Community Financial Credit Union - Banking Application
 
 ## Overview
-SecureBank is a modern, secure banking application built with HTML, CSS, and JavaScript. It features a complete authentication system with client-side storage, an attractive dashboard, and transaction management.
+Community Financial Credit Union is a modern, secure banking application built with HTML, CSS, and JavaScript. It features a complete authentication system with client-side storage, an attractive dashboard, and comprehensive transaction management.
 
-🎯 **New in Version 2.0:**
-- ✅ Age field in signup form (18+ requirement)
-- ✅ Enhanced dashboard with multiple cards
-- ✅ Wallet integration
-- ✅ Transaction history with detailed information
-- ✅ Add money and transfer functionality
-- ✅ Real-time balance tracking
-- ✅ User profile display with age information
-- ✅ No server required - fully functional with localStorage
+🎯 **New in Version 3.0:**
+- ✅ Dual Account System (Checking & Savings)
+- ✅ Internal transfers between accounts
+- ✅ External transfers to other accounts
+- ✅ Account-specific transaction tracking
+- ✅ Enhanced security with reCAPTCHA verification
+- ✅ Multiple transfer options (Internal, External, Bill Pay, Wire Transfer)
+- ✅ Real-time balance updates across all accounts
+- ✅ Comprehensive transaction history
 
 ## Features
 - ✅ **User Authentication**: Secure signup and login system
+- ✅ **Dual Accounts**: Automatic creation of checking and savings accounts
 - ✅ **Age Verification**: Users must be 18+ to create an account
+- ✅ **Account Management**: Separate balances and transactions for each account
+- ✅ **Internal Transfers**: Move money between your checking and savings accounts
+- ✅ **External Transfers**: Send money to other accounts with routing numbers
+- ✅ **Bill Pay**: Automated bill payment system (coming soon)
+- ✅ **Wire Transfers**: International money transfers (coming soon)
 - ✅ **User Profile**: Display user information including name, email, phone, and age
-- ✅ **Dashboard**: Attractive, modern dashboard with multiple cards and statistics
-- ✅ **Account Balance**: Real-time balance tracking
-- ✅ **Transaction History**: Complete transaction history with timestamps
-- ✅ **Wallet Integration**: Virtual wallet display with card information
-- ✅ **Add Money**: Functionality to add funds to your account
-- ✅ **Send Money**: Transfer funds to other users
+- ✅ **Dashboard**: Attractive, modern dashboard with account cards and statistics
+- ✅ **Dual Account System**: Separate checking and savings accounts
+- ✅ **Internal Transfers**: Transfer money between your own accounts
+- ✅ **External Transfers**: Send money to other accounts with account/routing numbers
+- ✅ **Account Balance**: Real-time balance tracking across all accounts
+- ✅ **Transaction History**: Complete transaction history with account-specific tracking
+- ✅ **Transfer Options**: Multiple transfer types (Internal, External, Bill Pay, Wire Transfer)
+- ✅ **Security**: reCAPTCHA verification on site access
 - ✅ **Responsive Design**: Works on desktop, tablet, and mobile devices
 - ✅ **Client-Side Authentication**: No server required - all data stored locally
 
@@ -35,6 +43,8 @@ SecureBank is a modern, secure banking application built with HTML, CSS, and Jav
    - `login.html`
    - `signup.html`
    - `dashboard.html`
+   - `contactus.html`
+   - `AI.html`
    - `app.js`
    - `styles.css`
 
@@ -46,7 +56,7 @@ SecureBank is a modern, secure banking application built with HTML, CSS, and Jav
 ## Demo Credentials
 For quick testing without signup, use these demo credentials:
 
-**Email**: `demo@securebank.com`  
+**Email**: `demo@communityfinancialcu.com`  
 **Password**: `Demo@123456`
 
 This demo account comes pre-loaded with:
@@ -204,7 +214,7 @@ The application is fully responsive and works on:
 ### Can't Login
 - Check that your email and password are correct
 - Ensure you've completed the signup process
-- Try the demo credentials: `demo@securebank.com` / `Demo@123456`
+- Try the demo credentials: `demo@communityfinancialcu.com` / `Demo@123456`
 - Make sure localStorage is enabled in your browser
 
 ### Age Validation Error
@@ -380,7 +390,7 @@ To enable Microsoft login:
 1. Go to [Azure Portal](https://portal.azure.com/)
 2. Click "Azure Active Directory" → "App registrations" → "New registration"
 3. Register your application:
-   - Name: "SecureBank"
+   - Name: "Community Financial Credit Union"
    - Redirect URI: Select "Web" and enter your domain
 4. In the app overview, copy the "Client ID"
 5. Create a client secret under "Certificates & secrets"

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - SecureBank</title>
+    <title>Dashboard - Community Financial Credit Union</title>
     <link rel="stylesheet" href="styles.css">
     <style>
         .dashboard-container {
@@ -339,6 +339,61 @@
             font-size: 14px;
         }
 
+        .transfers-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .transfers-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .transfer-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .transfer-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transfer-card:hover {
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .transfer-icon {
+            font-size: 32px;
+            color: #667eea;
+        }
+
+        .transfer-info h3 {
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .transfer-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -488,7 +543,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">SecureBank</div>
+            <div class="logo">Community Financial Credit Union</div>
             <ul class="nav-links">
                 <li><a href="#" id="userEmail">--</a></li>
                 <li><a href="#" onclick="logoutUser()">Logout</a></li>
@@ -511,32 +566,32 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
+            <!-- Account Cards -->
             <div class="cards-grid">
                 <div class="card gradient">
-                    <h3>Account Balance</h3>
-                    <div class="card-value" id="balanceDisplay">$0.00</div>
+                    <h3>Checking Account</h3>
+                    <div class="card-value" id="checkingBalance">$0.00</div>
                     <div class="card-footer">
-                        <span>Total available</span>
-                        <span class="card-icon">💰</span>
+                        <span id="checkingAccountNumber">****0000</span>
+                        <span class="card-icon">🏦</span>
                     </div>
                 </div>
 
                 <div class="card gradient-pink">
-                    <h3>Total Transactions</h3>
-                    <div class="card-value" id="transactionCount">0</div>
+                    <h3>Savings Account</h3>
+                    <div class="card-value" id="savingsBalance">$0.00</div>
                     <div class="card-footer">
-                        <span>All time</span>
-                        <span class="card-icon">📊</span>
+                        <span id="savingsAccountNumber">****0000</span>
+                        <span class="card-icon">💰</span>
                     </div>
                 </div>
 
                 <div class="card gradient-blue">
-                    <h3>Account Status</h3>
-                    <div class="card-value" style="font-size: 24px;">Active</div>
+                    <h3>Total Balance</h3>
+                    <div class="card-value" id="totalBalance">$0.00</div>
                     <div class="card-footer">
-                        <span>Verified & Secure</span>
-                        <span class="card-icon">✅</span>
+                        <span>Combined accounts</span>
+                        <span class="card-icon">📊</span>
                     </div>
                 </div>
 
@@ -627,6 +682,41 @@
                 </div>
             </div>
 
+            <!-- Money Transfers -->
+            <div class="transfers-section">
+                <h2>💸 Transfer Money</h2>
+                <div class="transfer-options">
+                    <div class="transfer-card" onclick="openInternalTransferModal()">
+                        <div class="transfer-icon">🔄</div>
+                        <div class="transfer-info">
+                            <h3>Internal Transfer</h3>
+                            <p>Move money between your checking and savings accounts</p>
+                        </div>
+                    </div>
+                    <div class="transfer-card" onclick="openExternalTransferModal()">
+                        <div class="transfer-icon">📤</div>
+                        <div class="transfer-info">
+                            <h3>External Transfer</h3>
+                            <p>Send money to another account</p>
+                        </div>
+                    </div>
+                    <div class="transfer-card" onclick="openBillPayModal()">
+                        <div class="transfer-icon">📄</div>
+                        <div class="transfer-info">
+                            <h3>Bill Pay</h3>
+                            <p>Pay your bills automatically</p>
+                        </div>
+                    </div>
+                    <div class="transfer-card" onclick="openWireTransferModal()">
+                        <div class="transfer-icon">💳</div>
+                        <div class="transfer-info">
+                            <h3>Wire Transfer</h3>
+                            <p>Send money internationally</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Recent Transactions -->
             <div class="transactions-section">
                 <h2>📝 Recent Transactions</h2>
@@ -648,6 +738,13 @@
                 <button class="modal-close" onclick="closeAddMoneyModal()">&times;</button>
             </div>
             <div id="addMoneySuccess" class="success-message">Money added successfully! ✅</div>
+            <div class="form-group">
+                <label>Deposit To Account</label>
+                <select id="addMoneyAccount" style="width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 14px;">
+                    <option value="checking">Checking Account</option>
+                    <option value="savings">Savings Account</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label>Amount (USD)</label>
                 <input type="number" id="addMoneyAmount" placeholder="Enter amount" min="1" step="0.01">
@@ -695,6 +792,77 @@
         </div>
     </div>
 
+    <!-- Internal Transfer Modal -->
+    <div id="internalTransferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Internal Transfer</h2>
+                <button class="modal-close" onclick="closeInternalTransferModal()">&times;</button>
+            </div>
+            <div id="internalTransferSuccess" class="success-message">Transfer completed successfully! ✅</div>
+            <div class="form-group">
+                <label>From Account</label>
+                <select id="fromAccount" style="width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 14px;">
+                    <option value="checking">Checking Account</option>
+                    <option value="savings">Savings Account</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>To Account</label>
+                <select id="toAccount" style="width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 14px;">
+                    <option value="checking">Checking Account</option>
+                    <option value="savings">Savings Account</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="internalTransferAmount" placeholder="Enter amount" min="0.01" step="0.01">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeInternalTransferModal()">Cancel</button>
+                <button class="btn-primary" onclick="processInternalTransfer()">Transfer Money</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Transfer Modal -->
+    <div id="externalTransferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>External Transfer</h2>
+                <button class="modal-close" onclick="closeExternalTransferModal()">&times;</button>
+            </div>
+            <div id="externalTransferSuccess" class="success-message">Transfer initiated successfully! ✅</div>
+            <div class="form-group">
+                <label>Recipient Name</label>
+                <input type="text" id="externalRecipient" placeholder="Full name of recipient">
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="externalAccountNumber" placeholder="Recipient's account number">
+            </div>
+            <div class="form-group">
+                <label>Routing Number</label>
+                <input type="text" id="externalRoutingNumber" placeholder="9-digit routing number">
+            </div>
+            <div class="form-group">
+                <label>From Account</label>
+                <select id="externalFromAccount" style="width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 14px;">
+                    <option value="checking">Checking Account</option>
+                    <option value="savings">Savings Account</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="externalTransferAmount" placeholder="Enter amount" min="0.01" step="0.01">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeExternalTransferModal()">Cancel</button>
+                <button class="btn-primary" onclick="processExternalTransfer()">Send Transfer</button>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
     <script>
         // Check if user is logged in
@@ -736,17 +904,30 @@
             document.getElementById('joinDate').innerText = signupDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             document.getElementById('memberSince').innerText = signupDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-            // Update balance (load from localStorage or default to 0)
-            const balance = user.balance || 0;
-            document.getElementById('balanceDisplay').innerText = `$${balance.toFixed(2)}`;
-            document.getElementById('opayBalance').innerText = `$${balance.toFixed(2)}`;
+            // Update account balances
+            const checkingBalance = user.accounts?.checking?.balance || 0;
+            const savingsBalance = user.accounts?.savings?.balance || 0;
+            const totalBalance = checkingBalance + savingsBalance;
+            
+            document.getElementById('checkingBalance').innerText = `$${checkingBalance.toFixed(2)}`;
+            document.getElementById('savingsBalance').innerText = `$${savingsBalance.toFixed(2)}`;
+            document.getElementById('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
+            
+            // Update account numbers
+            const checkingAccount = user.accounts?.checking?.accountNumber || '****0000';
+            const savingsAccount = user.accounts?.savings?.accountNumber || '****0000';
+            document.getElementById('checkingAccountNumber').innerText = `****${checkingAccount.slice(-4)}`;
+            document.getElementById('savingsAccountNumber').innerText = `****${savingsAccount.slice(-4)}`;
+            
+            // Update transaction count (combined from both accounts)
+            const checkingTransactions = user.accounts?.checking?.transactions || [];
+            const savingsTransactions = user.accounts?.savings?.transactions || [];
+            const totalTransactions = checkingTransactions.length + savingsTransactions.length;
+            document.getElementById('transactionCount').innerText = totalTransactions;
 
-            // Update transaction count
-            const transactions = user.transactions || [];
-            document.getElementById('transactionCount').innerText = transactions.length;
-
-            // Load transactions
-            loadTransactions(transactions);
+            // Load transactions (combined from both accounts)
+            const allTransactions = [...checkingTransactions, ...savingsTransactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            loadTransactions(allTransactions);
         }
 
         function loadTransactions(transactions) {
@@ -802,6 +983,7 @@
 
         function processAddMoney() {
             const amount = parseFloat(document.getElementById('addMoneyAmount').value);
+            const accountType = document.getElementById('addMoneyAccount').value;
             
             if (!amount || amount <= 0) {
                 alert('Please enter a valid amount');
@@ -809,13 +991,23 @@
             }
 
             const user = JSON.parse(localStorage.getItem('currentUser'));
-            user.balance = (user.balance || 0) + amount;
-            user.transactions = user.transactions || [];
-            user.transactions.push({
+            
+            // Initialize accounts if they don't exist
+            if (!user.accounts) {
+                user.accounts = {
+                    checking: { accountNumber: generateAccountNumber(), routingNumber: '123456789', balance: 0, accountType: 'checking', transactions: [] },
+                    savings: { accountNumber: generateAccountNumber(), routingNumber: '123456789', balance: 0, accountType: 'savings', transactions: [] }
+                };
+            }
+            
+            // Add money to selected account
+            user.accounts[accountType].balance += amount;
+            user.accounts[accountType].transactions.push({
                 type: 'credit',
                 amount: amount,
                 description: 'Money Added',
-                date: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                accountType: accountType
             });
 
             // Update in allUsers
@@ -828,13 +1020,176 @@
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             document.getElementById('addMoneySuccess').classList.add('show');
-            document.getElementById('balanceDisplay').innerText = `$${user.balance.toFixed(2)}`;
-            document.getElementById('opayBalance').innerText = `$${user.balance.toFixed(2)}`;
-            document.getElementById('transactionCount').innerText = user.transactions.length;
-            loadTransactions(user.transactions);
+            
+            // Update display
+            updateBalances(user);
+            
+        function updateBalances(user) {
+            const checkingBalance = user.accounts?.checking?.balance || 0;
+            const savingsBalance = user.accounts?.savings?.balance || 0;
+            const totalBalance = checkingBalance + savingsBalance;
+            
+            document.getElementById('checkingBalance').innerText = `$${checkingBalance.toFixed(2)}`;
+            document.getElementById('savingsBalance').innerText = `$${savingsBalance.toFixed(2)}`;
+            document.getElementById('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
+            
+            // Update transaction count
+            const checkingTransactions = user.accounts?.checking?.transactions || [];
+            const savingsTransactions = user.accounts?.savings?.transactions || [];
+            const totalTransactions = checkingTransactions.length + savingsTransactions.length;
+            document.getElementById('transactionCount').innerText = totalTransactions;
+            
+            // Reload transactions
+            const allTransactions = [...checkingTransactions, ...savingsTransactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            loadTransactions(allTransactions);
+        }
 
+        function generateAccountNumber() {
+            let accountNumber = '';
+            for (let i = 0; i < 10; i++) {
+                accountNumber += Math.floor(Math.random() * 10);
+            }
+            return accountNumber;
+        }
+
+        // Transfer Modal Functions
+        function openInternalTransferModal() {
+            document.getElementById('internalTransferModal').classList.add('show');
+        }
+
+        function closeInternalTransferModal() {
+            document.getElementById('internalTransferModal').classList.remove('show');
+            document.getElementById('internalTransferAmount').value = '';
+            document.getElementById('internalTransferSuccess').classList.remove('show');
+        }
+
+        function openExternalTransferModal() {
+            document.getElementById('externalTransferModal').classList.add('show');
+        }
+
+        function closeExternalTransferModal() {
+            document.getElementById('externalTransferModal').classList.remove('show');
+            document.getElementById('externalRecipient').value = '';
+            document.getElementById('externalAccountNumber').value = '';
+            document.getElementById('externalRoutingNumber').value = '';
+            document.getElementById('externalTransferAmount').value = '';
+            document.getElementById('externalTransferSuccess').classList.remove('show');
+        }
+
+        function openBillPayModal() {
+            alert('Bill Pay feature coming soon!');
+        }
+
+        function openWireTransferModal() {
+            alert('Wire Transfer feature coming soon!');
+        }
+
+        function processInternalTransfer() {
+            const fromAccount = document.getElementById('fromAccount').value;
+            const toAccount = document.getElementById('toAccount').value;
+            const amount = parseFloat(document.getElementById('internalTransferAmount').value);
+            
+            if (fromAccount === toAccount) {
+                alert('Cannot transfer to the same account');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (user.accounts[fromAccount].balance < amount) {
+                alert('Insufficient funds');
+                return;
+            }
+            
+            // Process transfer
+            user.accounts[fromAccount].balance -= amount;
+            user.accounts[toAccount].balance += amount;
+            
+            // Add transactions
+            const timestamp = new Date().toISOString();
+            user.accounts[fromAccount].transactions.push({
+                type: 'debit',
+                amount: amount,
+                description: `Transfer to ${toAccount} account`,
+                timestamp: timestamp,
+                accountType: fromAccount
+            });
+            
+            user.accounts[toAccount].transactions.push({
+                type: 'credit',
+                amount: amount,
+                description: `Transfer from ${fromAccount} account`,
+                timestamp: timestamp,
+                accountType: toAccount
+            });
+
+            // Update in allUsers
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            const userIndex = allUsers.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                allUsers[userIndex] = user;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            document.getElementById('internalTransferSuccess').classList.add('show');
+            updateBalances(user);
+            
             setTimeout(() => {
-                closeAddMoneyModal();
+                closeInternalTransferModal();
+            }, 2000);
+        }
+
+        function processExternalTransfer() {
+            const recipient = document.getElementById('externalRecipient').value;
+            const accountNumber = document.getElementById('externalAccountNumber').value;
+            const routingNumber = document.getElementById('externalRoutingNumber').value;
+            const fromAccount = document.getElementById('externalFromAccount').value;
+            const amount = parseFloat(document.getElementById('externalTransferAmount').value);
+            
+            if (!recipient || !accountNumber || !routingNumber || !amount || amount <= 0) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (user.accounts[fromAccount].balance < amount) {
+                alert('Insufficient funds');
+                return;
+            }
+            
+            // Process transfer
+            user.accounts[fromAccount].balance -= amount;
+            
+            // Add transaction
+            user.accounts[fromAccount].transactions.push({
+                type: 'debit',
+                amount: amount,
+                description: `Transfer to ${recipient} (${accountNumber})`,
+                timestamp: new Date().toISOString(),
+                accountType: fromAccount
+            });
+
+            // Update in allUsers
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            const userIndex = allUsers.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                allUsers[userIndex] = user;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            document.getElementById('externalTransferSuccess').classList.add('show');
+            updateBalances(user);
+            
+            setTimeout(() => {
+                closeExternalTransferModal();
             }, 2000);
         }
 

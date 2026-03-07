@@ -1,9 +1,5 @@
 // ========== Bot Verification on Site Access ==========
 
-// Configuration
-const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key - replace with your actual key
-const VERIFICATION_THRESHOLD = 0.5; // Minimum score to pass verification
-
 // Check if user has already been verified
 function isUserVerified() {
     return localStorage.getItem('userVerified') === 'true';
@@ -14,77 +10,48 @@ function markUserVerified() {
     localStorage.setItem('userVerified', 'true');
 }
 
-// Show captcha modal
-function showCaptchaModal() {
-    const modal = document.getElementById('captchaModal');
-    if (modal) {
-        modal.style.display = 'flex';
+// Show captcha overlay
+function showCaptchaOverlay() {
+    const overlay = document.getElementById('captchaOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
 
-// Hide captcha modal
-function hideCaptchaModal() {
-    const modal = document.getElementById('captchaModal');
-    if (modal) {
-        modal.style.display = 'none';
+// Hide captcha overlay
+function hideCaptchaOverlay() {
+    const overlay = document.getElementById('captchaOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 }
 
-// Verify user with reCAPTCHA v3
-async function verifyUser() {
+// Callback function for reCAPTCHA success
+function onCaptchaSuccess() {
     const loader = document.getElementById('captchaLoader');
     const message = document.getElementById('captchaMessage');
+    const widget = document.querySelector('.captcha-widget');
 
-    if (loader) loader.style.display = 'block';
-    if (message) message.textContent = '';
+    if (loader) loader.style.display = 'flex';
+    if (message) message.style.display = 'none';
+    if (widget) widget.style.display = 'none';
 
-    try {
-        // Get reCAPTCHA token
-        const token = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'access_site' });
-
-        // For demo purposes, simulate verification with random score
-        // In production, send to backend for verification
-        const mockScore = Math.random(); // Random score between 0-1
-
-        setTimeout(() => {
-            if (mockScore >= VERIFICATION_THRESHOLD) {
-                // User passed verification
-                if (loader) loader.style.display = 'none';
-                if (message) {
-                    message.textContent = 'Verification successful! Welcome to SecureBank.';
-                    message.className = 'captcha-message success';
-                }
-
-                markUserVerified();
-                setTimeout(() => {
-                    hideCaptchaModal();
-                }, 1500);
-            } else {
-                // User failed verification - show retry option
-                if (loader) loader.style.display = 'none';
-                if (message) {
-                    message.innerHTML = `
-                        Verification failed. You may be a bot.<br>
-                        <button onclick="verifyUser()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Try Again</button>
-                    `;
-                    message.className = 'captcha-message error';
-                }
-            }
-        }, 2000);
-
-    } catch (error) {
-        console.error('Verification error:', error);
+    // Simulate verification process
+    setTimeout(() => {
         if (loader) loader.style.display = 'none';
         if (message) {
-            message.innerHTML = `
-                Verification service error.<br>
-                <button onclick="verifyUser()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Retry</button>
-            `;
-            message.className = 'captcha-message error';
+            message.textContent = 'Verification successful! Welcome to Community Financial Credit Union.';
+            message.className = 'captcha-message success';
+            message.style.display = 'block';
         }
-    }
+
+        markUserVerified();
+        setTimeout(() => {
+            hideCaptchaOverlay();
+        }, 1500);
+    }, 2000);
 }
 
 // ========== Form Handling ==========
@@ -109,9 +76,14 @@ if (signupForm) {
 
 // ========== Username/Password Login ==========
 function handleLogin() {
-    const credential = document.getElementById('username').value.trim();
+    let credential = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const messageBox = document.getElementById('messageBox');
+
+    // allow legacy demo email during migration
+    if (credential === 'demo@securebank.com') {
+        credential = 'demo@communityfinancialcu.com';
+    }
 
     // Validation
     if (!credential || !password) {
@@ -132,8 +104,18 @@ function handleLogin() {
     showMessage('Logging in...', 'info', messageBox);
 
     setTimeout(() => {
-        // Find user in allUsers
+        // Find user in allUsers (migrate old demo email if present)
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        let updated = false;
+        allUsers.forEach(u => {
+            if (u.email === 'demo@securebank.com') {
+                u.email = 'demo@communityfinancialcu.com';
+                updated = true;
+            }
+        });
+        if (updated) {
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+        }
         const user = allUsers.find(u => (u.email === credential || u.username === credential) && u.password === password);
 
         if (user) {
@@ -151,6 +133,16 @@ function handleLogin() {
             showMessage('Invalid username or password. Please try again.', 'error', messageBox);
         }
     }, 1500);
+}
+
+// ========== Utility Functions ==========
+function generateAccountNumber() {
+    // Generate a 10-digit account number
+    let accountNumber = '';
+    for (let i = 0; i < 10; i++) {
+        accountNumber += Math.floor(Math.random() * 10);
+    }
+    return accountNumber;
 }
 
 // ========== Email/Password Sign Up ==========
@@ -226,6 +218,10 @@ function handleEmailSignUp() {
 
     setTimeout(() => {
         // Save user data (in real app, send to backend)
+        const checkingAccountNumber = generateAccountNumber();
+        const savingsAccountNumber = generateAccountNumber();
+        const routingNumber = '123456789'; // Same routing number for all accounts
+        
         const user = {
             id: Date.now().toString(),
             firstName: firstName,
@@ -236,8 +232,22 @@ function handleEmailSignUp() {
             age: parseInt(age),
             password: password, // In production, hash this before storing
             signupTime: new Date().toISOString(),
-            balance: 0,
-            transactions: []
+            accounts: {
+                checking: {
+                    accountNumber: checkingAccountNumber,
+                    routingNumber: routingNumber,
+                    balance: 0,
+                    accountType: 'checking',
+                    transactions: []
+                },
+                savings: {
+                    accountNumber: savingsAccountNumber,
+                    routingNumber: routingNumber,
+                    balance: 0,
+                    accountType: 'savings',
+                    transactions: []
+                }
+            }
         };
         
         // Store in allUsers list
@@ -579,7 +589,7 @@ if (aiInput && aiSendBtn && aiMessages) {
     });
 
     // Initialize with welcome message
-    addAIMessage('Hello! I\'m your SecureBank AI assistant. How can I help you today?', 'bot');
+    addAIMessage('Hello! I\'m your Community Financial Credit Union AI assistant. I can help you with:\n\n• Account issues and balance inquiries\n• Transaction disputes and investigations\n• Money transfers and payments\n• Loan applications and information\n• Security concerns\n• General banking questions\n\nWhat can I help you with today? If I can\'t resolve your issue, I\'ll connect you with a human agent.', 'bot');
 }
 
 function handleAISend() {
@@ -599,126 +609,163 @@ function handleAISend() {
     }, 1000);
 }
 
-function addAIMessage(text, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `ai-message ${type}`;
-    messageDiv.textContent = text;
-    aiMessages.appendChild(messageDiv);
-    aiMessages.scrollTop = aiMessages.scrollHeight;
+function selectCapability(capability) {
+    // Add user message
+    addAIMessage(capability, 'user');
+
+    // Simulate AI response
+    setTimeout(() => {
+        const response = generateAIResponse(capability);
+        addAIMessage(response, 'bot');
+    }, 1000);
 }
 
 function generateAIResponse(userMessage) {
     const message = userMessage.toLowerCase();
-
-    // Simple keyword-based responses
+    
+    // Handle capability selections
+    if (message.includes('🔍 account issues')) {
+        return 'I can help you with account issues! What specific account problem are you experiencing?\n\n• Login/access problems\n• Account balance questions\n• Account verification\n• Account settings\n• Profile updates\n\nPlease describe your account issue and I\'ll assist you right away.';
+    }
+    
+    if (message.includes('💸 transaction disputes')) {
+        return 'I can help you with transaction disputes and investigations. What type of transaction issue are you facing?\n\n• Unauthorized charges\n• Incorrect amounts\n• Duplicate transactions\n• Merchant disputes\n• Refund issues\n\nPlease provide the transaction details and I\'ll start the dispute process for you.';
+    }
+    
+    if (message.includes('🔄 money transfers')) {
+        return 'I can assist you with money transfers! What type of transfer would you like to make?\n\n• Transfer between your own accounts\n• Send money to another person\n• Pay bills automatically\n• International transfers\n\nTell me the details and I\'ll guide you through the process step by step.';
+    }
+    
+    if (message.includes('🏠 loan information')) {
+        return 'I can provide information about our loan options! What type of loan are you interested in?\n\n• Personal loans\n• Home loans/mortgages\n• Auto loans\n• Business loans\n• Student loans\n\nI can also help you check pre-qualification or start an application.';
+    }
+    
+    if (message.includes('🔒 security concerns')) {
+        return 'Security is our top priority! How can I help with your security concerns?\n\n• Change password\n• Enable two-factor authentication\n• Review login activity\n• Report suspicious activity\n• Security best practices\n\nLet me know what security issue you\'re facing.';
+    }
+    
+    // Check for dispute keywords
+    if (message.includes('dispute') || message.includes('chargeback') || message.includes('unauthorized') || message.includes('fraud')) {
+        return 'I understand you have a dispute or potential fraud concern. Let me help you with that. Can you please provide:\n\n1. The transaction date\n2. The amount\n3. The merchant name\n4. A brief description of the issue\n\nI can initiate a dispute process for you right now, or would you prefer to speak with a human agent?';
+    }
+    
+    // Check for transaction complaints
+    if (message.includes('transaction') && (message.includes('wrong') || message.includes('error') || message.includes('mistake') || message.includes('complaint'))) {
+        return 'I\'m sorry to hear about the transaction issue. Let me help resolve this. Please provide:\n\n1. Your account number\n2. Transaction ID or reference number\n3. What went wrong with the transaction\n\nI can investigate this for you immediately. Would you like me to check your recent transactions?';
+    }
+    
+    // Account-related issues
+    if (message.includes('account') && (message.includes('locked') || message.includes('suspended') || message.includes('access') || message.includes('login problem'))) {
+        return 'I can help with account access issues. Let me verify your identity first. Are you able to provide:\n\n1. Your account number\n2. The last 4 digits of your registered phone number\n3. Your email address\n\nI can unlock your account or reset your password right away.';
+    }
+    
+    // Balance and transaction inquiries
     if (message.includes('balance') || message.includes('account')) {
-        return 'To check your account balance, please log in to your dashboard. If you need help with login, I can guide you through that!';
+        return 'To check your account balance or recent transactions, I need to verify your identity. Please provide your account number and the last transaction amount you remember. I can then show you your current balance and transaction history.';
     }
 
     if (message.includes('transfer') || message.includes('send money')) {
-        return 'You can transfer money securely through our online banking platform. Log in to your account and navigate to the transfers section.';
+        return 'I can help you with money transfers. What type of transfer would you like to make?\n\n1. Internal transfer (between your accounts)\n2. External transfer (to another person)\n3. Bill payment\n4. International transfer\n\nPlease provide the details and I\'ll guide you through the process.';
     }
 
     if (message.includes('loan') || message.includes('credit')) {
-        return 'We offer various loan options. Please visit our loans page or contact customer support for personalized assistance.';
+        return 'We offer various loan options including personal loans, home loans, and business loans. I can help you:\n\n1. Check your pre-qualification status\n2. Compare loan options\n3. Start a loan application\n\nWhat type of loan are you interested in?';
     }
 
-    if (message.includes('security') || message.includes('safe')) {
-        return 'Security is our top priority at SecureBank. We use bank-level encryption and multi-factor authentication to protect your data.';
+    if (message.includes('security') || message.includes('safe') || message.includes('hack') || message.includes('breach')) {
+        return 'Security is our top priority at Community Financial Credit Union. We use bank-level encryption, multi-factor authentication, and 24/7 monitoring. If you suspect any security issues, I can:\n\n1. Help you change your password\n2. Enable additional security features\n3. Review your recent login activity\n4. Connect you with our security team\n\nWhat security concern do you have?';
     }
 
-    if (message.includes('contact') || message.includes('support')) {
-        return 'You can reach our customer support at support@securebank.com or call 1-800-225-4764. We\'re here 24/7!';
+    if (message.includes('contact') || message.includes('support') || message.includes('agent') || message.includes('speak to human') || message.includes('📞 agent connection')) {
+        return 'I understand you\'d like to speak with a human agent. All our agents are currently busy assisting other customers. The current wait time is approximately 5-10 minutes.\n\nHowever, I can assist you in resolving your issue right now! What specific banking concern can I help you with?\n\n• Account access problems\n• Transaction questions\n• Transfer assistance\n• Security concerns\n• Loan information\n\nLet me know what you need help with and I\'ll get it resolved for you.';
     }
 
-    if (message.includes('hello') || message.includes('hi')) {
-        return 'Hello! How can I assist you with your banking needs today?';
+    if (message.includes('hello') || message.includes('hi') || message.includes('start')) {
+        return 'Hello! I\'m your Community Financial Credit Union AI assistant. I can help you with:\n\n• Account issues and balance inquiries\n• Transaction disputes and investigations\n• Money transfers and payments\n• Loan applications and information\n• Security concerns\n• General banking questions\n\nWhat can I help you with today? If I can\'t resolve your issue, I\'ll connect you with a human agent.';
     }
 
-    if (message.includes('bye') || message.includes('goodbye')) {
-        return 'Goodbye! Have a great day. Remember, SecureBank is always here to help.';
+    if (message.includes('bye') || message.includes('goodbye') || message.includes('thank')) {
+        return 'You\'re welcome! If you need any more help with your banking needs, feel free to come back anytime. Have a great day!';
     }
 
-    // Default response
-    return 'I\'m here to help with your banking questions. You can ask me about account balances, transfers, loans, security, or contact information. How else can I assist you?';
+    // Default response with escalation
+    return 'I want to make sure I fully understand your question. Could you please provide more details about what you need help with? I can assist with account issues, transactions, disputes, transfers, loans, and security concerns. If this is urgent or complex, I can connect you with a human agent right away.';
 }
 
 // ========== Page Load Handler ==========
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize demo data if no users exist
-    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    // Check if user is verified, if not show captcha overlay
+    if (!isUserVerified()) {
+        showCaptchaOverlay();
+    }
+
+    // Initialize demo data if no users exist (or migrate old demo email)
+    let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    
+    // Migrate any legacy demo account email to the new domain
+    let migrated = false;
+    allUsers.forEach(u => {
+        if (u.email === 'demo@securebank.com') {
+            u.email = 'demo@communityfinancialcu.com';
+            migrated = true;
+        }
+    });
+    if (migrated) {
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    }
+
     if (allUsers.length === 0) {
+        const checkingAccountNumber = generateAccountNumber();
+        const savingsAccountNumber = generateAccountNumber();
+        const routingNumber = '123456789';
+        
         const demoUser = {
             id: '1000000001',
             firstName: 'Demo',
             lastName: 'User',
             username: 'demouser',
-            email: 'demo@securebank.com',
+            email: 'demo@communityfinancialcu.com',
             phone: '+1 (555) 123-4567',
             age: 28,
             password: 'Demo@123456', // Demo password
             signupTime: new Date().toISOString(),
-            balance: 5234.50,
-            transactions: [
-                {
-                    type: 'credit',
-                    amount: 5000,
-                    description: 'Initial Deposit',
-                    date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+            accounts: {
+                checking: {
+                    accountNumber: checkingAccountNumber,
+                    routingNumber: routingNumber,
+                    balance: 2500.00,
+                    accountType: 'checking',
+                    transactions: [
+                        {
+                            type: 'credit',
+                            amount: 2500.00,
+                            description: 'Initial deposit',
+                            timestamp: new Date().toISOString(),
+                            accountType: 'checking'
+                        }
+                    ]
                 },
-                {
-                    type: 'debit',
-                    amount: 150,
-                    description: 'Transfer to john@example.com',
-                    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    type: 'credit',
-                    amount: 400,
-                    description: 'Salary Deposit',
-                    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    type: 'debit',
-                    amount: 15.50,
-                    description: 'Online Purchase at Amazon',
-                    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+                savings: {
+                    accountNumber: savingsAccountNumber,
+                    routingNumber: routingNumber,
+                    balance: 5000.00,
+                    accountType: 'savings',
+                    transactions: [
+                        {
+                            type: 'credit',
+                            amount: 5000.00,
+                            description: 'Savings deposit',
+                            timestamp: new Date().toISOString(),
+                            accountType: 'savings'
+                        }
+                    ]
                 }
-            ]
-        };
-        localStorage.setItem('allUsers', JSON.stringify([demoUser]));
-    }
-
-    // Initialize captcha verification on index page
-    if (document.getElementById('captchaModal')) {
-        // Check if reCAPTCHA is loaded
-        if (typeof grecaptcha !== 'undefined') {
-            // If user is not verified, show captcha modal
-            if (!isUserVerified()) {
-                showCaptchaModal();
-                verifyUser();
             }
-        } else {
-            // If reCAPTCHA fails to load after 5 seconds, show error
-            setTimeout(() => {
-                if (typeof grecaptcha === 'undefined' && !isUserVerified()) {
-                    showCaptchaModal();
-                    const loader = document.getElementById('captchaLoader');
-                    const message = document.getElementById('captchaMessage');
-
-                    if (loader) loader.style.display = 'none';
-                    if (message) {
-                        message.innerHTML = `
-                            reCAPTCHA failed to load. Please check your internet connection.<br>
-                            <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 16px; font-size: 14px;">Reload Page</button>
-                        `;
-                        message.className = 'captcha-message error';
-                    }
-                }
-            }, 5000);
-        }
+        };
+        allUsers = [demoUser];
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
     }
 
-    console.log('SecureBank app loaded');
+    console.log('Community Financial Credit Union app loaded');
 });

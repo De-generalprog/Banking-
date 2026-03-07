@@ -1,48 +1,54 @@
-# SecureBank v2.0 - Update Summary
+# Community Financial Credit Union v3.0 - Update Summary
 
 ## What's New ✨
 
-### 1. **Age Field in Signup** ✅
-- Added age input field to signup form
-- Age validation: Users must be 18-120 years old
-- Age is required during signup and stored in user profile
-- Age displayed in user profile section on dashboard
+### 1. **Dual Account System** ✅
+- Automatic creation of both checking and savings accounts during signup
+- Separate account numbers and routing numbers for each account
+- Individual balance tracking for each account
+- Account-specific transaction history
 
-### 2. **Enhanced Authentication System** ✅
-- Effective signup and login WITHOUT a server
-- Client-side validation with real-time feedback
-- User data stored in localStorage
-- Duplicate email prevention
-- Automatic logout functionality
-- Demo account pre-loaded for testing
+### 2. **Advanced Transfer System** ✅
+- **Internal Transfers**: Move money between your checking and savings accounts
+- **External Transfers**: Send money to other accounts with account/routing numbers
+- **Bill Pay**: Automated bill payment system (coming soon)
+- **Wire Transfers**: International money transfers (coming soon)
+- Real-time balance updates after transfers
 
-### 3. **Attractive Dashboard** ✅
+### 3. **Enhanced Security** ✅
+- reCAPTCHA verification required on site access
+- Full-screen security overlay before accessing the application
+- Persistent verification status
+
+### 4. **Comprehensive Dashboard** ✅
 Modern dashboard featuring:
 - **Welcome Section**: Personalized greeting with quick action buttons
-- **Statistics Cards**: 
-  - Account Balance (with gradient styling)
-  - Total Transactions
-  - Account Status
-  - Member Since
+- **Account Cards**:
+  - Checking Account balance and number
+  - Savings Account balance and number
+  - Total combined balance
+  - Member Since information
+- **Transfer Section**: Multiple transfer options with visual cards
 - **User Profile Section**: Displays all user information including age
-- **OPay Wallet**: Virtual wallet with card display and quick actions
-- **Transaction History**: Detailed list of all transactions with timestamps
+- **Transaction History**: Detailed list of all transactions across accounts
 - **Responsive Layout**: Works perfectly on mobile, tablet, and desktop
 
-### 4. **Financial Features** ✅
-- **Add Money**: Add funds to your wallet with different payment methods
-- **Send Money**: Transfer funds to other users with optional messages
-- **Real-Time Balance**: Balance updates immediately after transactions
-- **Transaction Tracking**: Complete history with amounts, descriptions, and timestamps
+### 5. **Advanced Transfer System** ✅
+- **Internal Transfers**: Move money between checking and savings accounts
+- **External Transfers**: Send money to other accounts with full account details
+- **Bill Pay**: Automated bill payment system (framework ready)
+- **Wire Transfers**: International transfer system (framework ready)
+- **Real-Time Updates**: Balances update immediately after transfers
 
-### 5. **User Profile Display** ✅
+### 6. **User Profile Display** ✅
 Shows:
 - Full Name
 - Email Address
 - Phone Number
-- **Age** (newly added)
+- Age
 - Account ID
 - Member Since Date
+- Account Numbers (Checking & Savings)
 
 ### 6. **Visual Enhancements** ✅
 - Gradient color scheme (Purple, Pink, Blue, Green)
@@ -59,7 +65,7 @@ Shows:
 2. Complete reCAPTCHA verification
 3. Click "Login"
 4. Use demo credentials:
-   - Email: `demo@securebank.com`
+   - Email: `demo@communityfinancialcu.com`
    - Password: `Demo@123456`
 
 ### Create New Account
@@ -119,7 +125,7 @@ function validateAge(age) {
 ## Credentials for Testing
 
 ### Demo Account (Pre-loaded):
-- **Email**: `demo@securebank.com`
+- **Email**: `demo@communityfinancialcu.com`
 - **Password**: `Demo@123456`
 - **Balance**: $5,234.50
 - **Age**: 28 years old

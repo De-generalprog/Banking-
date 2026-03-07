@@ -50,6 +50,33 @@
                 </div>
                 <button class="btn btn-primary" onclick="requestCard()">Request New Card</button>
             </div>
+
+            <!-- Card FAQs -->
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); margin-top: 30px;">
+                <h2 style="color: #333; margin-bottom: 20px;">💳 Card FAQs</h2>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <h4 style="color: #333; margin: 0 0 5px 0;">How do I block my card?</h4>
+                        <p style="color: #666; margin: 0;">Click the "Block Card" button on your card. You can unblock it anytime.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #333; margin: 0 0 5px 0;">Can I personalize my card?</h4>
+                        <p style="color: #666; margin: 0;">Yes, click "Personalize" to change the card holder name.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #333; margin: 0 0 5px 0;">What is a primary card?</h4>
+                        <p style="color: #666; margin: 0;">Your primary card is used for default transactions and bill payments.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #333; margin: 0 0 5px 0;">How do I request a new card?</h4>
+                        <p style="color: #666; margin: 0;">Use the "Request New Card" section above to order a replacement or additional card.</p>
+                    </div>
+                    <div>
+                        <h4 style="color: #333; margin: 0 0 5px 0;">What should I do if my card is lost?</h4>
+                        <p style="color: #666; margin: 0;">Immediately block your card and request a replacement.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -96,6 +123,9 @@
                             </div>
                         </div>
                         <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" onclick="showCardDetails(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Show Details</button>
+                            <button class="btn" onclick="personalizeCard(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Personalize</button>
+                            <button class="btn" onclick="manageCard(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Manage</button>
                             ${!card.isBlocked ? `<button class="btn" onclick="blockCard(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Block Card</button>` : `<button class="btn" onclick="unblockCard(${index})" style="background: #27ae60; color: white; border: none; padding: 8px 15px; cursor: pointer;">Unblock Card</button>`}
                             <button class="btn" onclick="setAsPrimary(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Set as Primary</button>
                             <button class="btn" onclick="deleteCard(${index})" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; cursor: pointer;">Delete</button>
@@ -145,6 +175,40 @@
                 updateCurrentUser(user);
                 loadCards();
                 showMessage('Card deleted. ✅', 'success', document.getElementById('cardMessage'));
+            }
+        }
+
+        function showCardDetails(index) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const card = user.cards[index];
+            alert(`Card Details:\n\nType: ${card.type}\nNumber: **** **** **** ${card.last4}\nHolder: ${card.holderName}\nExpiry: ${card.expiry}\nStatus: ${card.isBlocked ? 'Blocked' : 'Active'}\nPrimary: ${card.isPrimary ? 'Yes' : 'No'}`);
+        }
+
+        function personalizeCard(index) {
+            const newName = prompt('Enter new card holder name:');
+            if (newName && newName.trim()) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                user.cards[index].holderName = newName.trim();
+                updateCurrentUser(user);
+                loadCards();
+                showMessage('Card personalized successfully. ✅', 'success', document.getElementById('cardMessage'));
+            }
+        }
+
+        function manageCard(index) {
+            const action = prompt('Manage Card Options:\n1. Change PIN\n2. Update Limits\n3. View Transactions\n\nEnter option number:');
+            switch(action) {
+                case '1':
+                    alert('PIN change feature coming soon!');
+                    break;
+                case '2':
+                    alert('Limits update feature coming soon!');
+                    break;
+                case '3':
+                    alert('Transaction view feature coming soon!');
+                    break;
+                default:
+                    alert('Invalid option');
             }
         }
 

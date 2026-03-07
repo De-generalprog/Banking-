@@ -552,6 +552,78 @@
             .profile-grid {
                 grid-template-columns: 1fr;
             }
+
+            .dashboard-navbar .nav-container > div {
+                gap: 10px !important;
+                flex-wrap: wrap;
+            }
+
+            .dashboard-navbar .nav-links {
+                gap: 10px !important;
+            }
+
+            .dashboard-navbar .logo {
+                font-size: 16px;
+            }
+
+            .dashboard-navbar .nav-links li span,
+            .dashboard-navbar .nav-links li a {
+                font-size: 14px;
+            }
+
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .feature-card {
+                background: white;
+                padding: 30px;
+                border-radius: 16px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .feature-icon {
+                font-size: 48px;
+                margin-bottom: 15px;
+            }
+
+            .feature-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 10px;
+            }
+
+            .feature-desc {
+                color: #666;
+                font-size: 14px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-icon {
+                font-size: 36px;
+            }
+
+            .feature-title {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
@@ -756,11 +828,11 @@
             </div>
 
             <!-- Recent Transactions -->
-            <div class="transactions-section">
-                <h2>📝 Recent Transactions</h2>
-                <div id="transactionsList">
+            <div class="quick-features-section">
+                <h2>� Quick Actions</h2>
+                <div class="features-grid">
                     <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-icon">�</div>
                         <p>No transactions yet. Add money to get started!</p>
                     </div>
                 </div>
@@ -940,8 +1012,11 @@
             document.getElementById('welcomeMessage').innerText = `Welcome back, ${displayName}!`;
             
             // Display username or full name in navbar (not email)
-            const navbarDisplay = user.username ? user.username : `${user.firstName || ''} ${user.lastName || ''}`.trim();
-            document.getElementById('userEmail').innerText = navbarDisplay || 'User';
+            let navbarDisplay = user.username;
+            if (!navbarDisplay || navbarDisplay === user.email) {
+                navbarDisplay = user.email.split('@')[0] || 'User';
+            }
+            document.getElementById('userEmail').innerText = navbarDisplay;
             
             // Update profile section
             document.getElementById('fullName').innerText = `${user.firstName} ${user.lastName}`;
@@ -998,9 +1073,25 @@
             
             if (transactions.length === 0) {
                 transactionsList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <p>No transactions yet. Add money to get started!</p>
+                    <div class="feature-card" onclick="window.location.reload()">
+                        <div class="feature-icon">🏠</div>
+                        <div class="feature-title">Home</div>
+                        <div class="feature-desc">Back to dashboard</div>
+                    </div>
+                    <div class="feature-card" onclick="openTransferModal()">
+                        <div class="feature-icon">📤</div>
+                        <div class="feature-title">Send</div>
+                        <div class="feature-desc">Transfer money</div>
+                    </div>
+                    <div class="feature-card" onclick="window.location.href='billpay.html'">
+                        <div class="feature-icon">💳</div>
+                        <div class="feature-title">Pay</div>
+                        <div class="feature-desc">Pay bills & services</div>
+                    </div>
+                    <div class="feature-card" onclick="window.location.href='settings-cards.html'">
+                        <div class="feature-icon">💳</div>
+                        <div class="feature-title">Card</div>
+                        <div class="feature-desc">Manage your cards</div>
                     </div>
                 `;
                 return;

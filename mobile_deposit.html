@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Deposit - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">← Back to Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>Mobile Deposit</h1>
+            <div id="depositMessage" class="message-box"></div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="depositAmount" placeholder="0.00" min="0.01" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Check Number (optional)</label>
+                <input type="text" id="depositCheckNumber" placeholder="123456">
+            </div>
+            <button class="btn btn-primary" id="depositSubmit">Deposit</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+        });
+
+        document.getElementById('depositSubmit').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const msgBox = document.getElementById('depositMessage');
+
+            if (!amount || amount <= 0) {
+                showMessage('Please enter a valid amount', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const checking = user.accounts?.checking;
+            if (!checking) {
+                showMessage('No checking account found', 'error', msgBox);
+                return;
+            }
+
+            checking.balance += amount;
+            checking.transactions.push({
+                type: 'credit',
+                amount: amount,
+                description: 'Mobile deposit',
+                timestamp: new Date().toISOString(),
+                accountType: 'checking'
+            });
+
+            updateCurrentUser(user);
+            showMessage('Deposit successful! ✅', 'success', msgBox);
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

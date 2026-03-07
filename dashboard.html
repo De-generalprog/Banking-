@@ -13,6 +13,22 @@
             padding-bottom: 40px;
         }
 
+        .dashboard-navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+
+        .dashboard-navbar .logo {
+            color: white;
+        }
+
+        .dashboard-navbar .nav-links a {
+            color: white !important;
+        }
+
+        .dashboard-navbar .nav-links a:hover {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
         .dashboard-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -541,13 +557,20 @@
 </head>
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar">
+    <nav class="navbar dashboard-navbar">
         <div class="nav-container">
             <div class="logo">Community Financial Credit Union</div>
-            <ul class="nav-links">
-                <li><a href="#" id="userEmail">--</a></li>
-                <li><a href="#" onclick="logoutUser()">Logout</a></li>
-            </ul>
+            <div style="display: flex; align-items: center; gap: 25px; margin-left: auto;">
+                <a href="settings.html" style="color: white; text-decoration: none; font-size: 18px; transition: opacity 0.3s;" title="Account Settings">⚙️</a>
+                <a href="transaction-history.html" style="position: relative; color: white; text-decoration: none; font-size: 24px; transition: opacity 0.3s;" title="Transaction History">
+                    🔔
+                    <span id="notificationBadge" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; display: none;">0</span>
+                </a>
+                <ul class="nav-links" style="margin: 0; display: flex; gap: 20px; list-style: none;">
+                    <li><span id="userEmail" style="color: white; text-decoration: none;">--</span></li>
+                    <li><a href="#" onclick="logoutUser()" style="color: white; text-decoration: none;">Logout</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -570,8 +593,8 @@
             <div class="cards-grid">
                 <div class="card gradient">
                     <h3>Checking Account</h3>
-                    <div class="card-value" id="checkingBalance">$0.00</div>
-                    <div class="card-footer">
+                    <div class="card-value" id="checkingBalance" style="cursor: pointer;" onclick="showAccountDetails('checking')">$0.00</div>
+                    <div class="card-footer" style="cursor: pointer;" onclick="showAccountDetails('checking')">
                         <span id="checkingAccountNumber">****0000</span>
                         <span class="card-icon">🏦</span>
                     </div>
@@ -579,8 +602,8 @@
 
                 <div class="card gradient-pink">
                     <h3>Savings Account</h3>
-                    <div class="card-value" id="savingsBalance">$0.00</div>
-                    <div class="card-footer">
+                    <div class="card-value" id="savingsBalance" style="cursor: pointer;" onclick="showAccountDetails('savings')">$0.00</div>
+                    <div class="card-footer" style="cursor: pointer;" onclick="showAccountDetails('savings')">
                         <span id="savingsAccountNumber">****0000</span>
                         <span class="card-icon">💰</span>
                     </div>
@@ -618,16 +641,16 @@
                         <div class="profile-value" id="usernameDisplay">--</div>
                     </div>
                     <div class="profile-item">
-                        <div class="profile-label">Username</div>
-                        <div class="profile-value" id="usernameDisplay">--</div>
-                    </div>
-                    <div class="profile-item">
                         <div class="profile-label">Email Address</div>
                         <div class="profile-value" id="emailDisplay">--</div>
                     </div>
                     <div class="profile-item">
                         <div class="profile-label">Phone Number</div>
                         <div class="profile-value" id="phoneDisplay">--</div>
+                    </div>
+                    <div class="profile-item">
+                        <div class="profile-label">Address</div>
+                        <div class="profile-value" id="addressDisplay">--</div>
                     </div>
                     <div class="profile-item">
                         <div class="profile-label">Age</div>
@@ -671,13 +694,21 @@
                         <div class="opay-option-icon">📤</div>
                         <div class="opay-option-label">Send Money</div>
                     </div>
-                    <div class="opay-option" onclick="alert('Mobile Top-up Coming Soon')">
+                    <div class="opay-option" onclick="window.location.href='mobile_deposit.html'">
                         <div class="opay-option-icon">📱</div>
-                        <div class="opay-option-label">Mobile Top-up</div>
+                        <div class="opay-option-label">Mobile Deposit</div>
                     </div>
-                    <div class="opay-option" onclick="alert('Bill Pay Coming Soon')">
+                    <div class="opay-option" onclick="window.location.href='billpay.html'">
                         <div class="opay-option-icon">📃</div>
                         <div class="opay-option-label">Pay Bills</div>
+                    </div>
+                    <div class="opay-option" onclick="window.location.href='wire.html'">
+                        <div class="opay-option-icon">💸</div>
+                        <div class="opay-option-label">Wire Transfer</div>
+                    </div>
+                    <div class="opay-option" onclick="window.location.href='ach.html'">
+                        <div class="opay-option-icon">🔁</div>
+                        <div class="opay-option-label">ACH Transfer</div>
                     </div>
                 </div>
             </div>
@@ -700,18 +731,25 @@
                             <p>Send money to another account</p>
                         </div>
                     </div>
-                    <div class="transfer-card" onclick="openBillPayModal()">
+                    <div class="transfer-card" onclick="window.location.href='billpay.html'">
                         <div class="transfer-icon">📄</div>
                         <div class="transfer-info">
                             <h3>Bill Pay</h3>
                             <p>Pay your bills automatically</p>
                         </div>
                     </div>
-                    <div class="transfer-card" onclick="openWireTransferModal()">
+                    <div class="transfer-card" onclick="window.location.href='wire.html'">
                         <div class="transfer-icon">💳</div>
                         <div class="transfer-info">
                             <h3>Wire Transfer</h3>
                             <p>Send money internationally</p>
+                        </div>
+                    </div>
+                    <div class="transfer-card" onclick="window.location.href='ach.html'">
+                        <div class="transfer-icon">🔁</div>
+                        <div class="transfer-info">
+                            <h3>ACH Transfer</h3>
+                            <p>Send money via ACH network</p>
                         </div>
                     </div>
                 </div>
@@ -865,6 +903,19 @@
 
     <script src="app.js"></script>
     <script>
+        // Account Details Modal
+        function showAccountDetails(accountType) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const account = user.accounts[accountType];
+            
+            const accountName = accountType.charAt(0).toUpperCase() + accountType.slice(1);
+            const fullRoutingNumber = account.routingNumber || 'N/A';
+            const fullAccountNumber = account.accountNumber || 'N/A';
+            
+            alert(`${accountName} Account Details\n\nAccount Number: ${fullAccountNumber}\nRouting Number: ${fullRoutingNumber}\nBalance: $${account.balance.toFixed(2)}`);
+        }
+    </script>
+    <script>
         // Check if user is logged in
         function checkAuth() {
             if (!localStorage.getItem('isLoggedIn')) {
@@ -887,7 +938,10 @@
             // show username if available, otherwise fall back to first name
             const displayName = user.username || user.firstName || 'User';
             document.getElementById('welcomeMessage').innerText = `Welcome back, ${displayName}!`;
-            document.getElementById('userEmail').innerText = displayName;
+            
+            // Display username or full name in navbar (not email)
+            const navbarDisplay = user.username ? user.username : `${user.firstName || ''} ${user.lastName || ''}`.trim();
+            document.getElementById('userEmail').innerText = navbarDisplay || 'User';
             
             // Update profile section
             document.getElementById('fullName').innerText = `${user.firstName} ${user.lastName}`;
@@ -896,6 +950,9 @@
             }
             document.getElementById('emailDisplay').innerText = user.email;
             document.getElementById('phoneDisplay').innerText = user.phone;
+            if (document.getElementById('addressDisplay')) {
+                document.getElementById('addressDisplay').innerText = user.address || '--';
+            }
             document.getElementById('ageDisplay').innerText = `${user.age} years old`;
             document.getElementById('accountId').innerText = user.id.substring(0, 8) + '****';
             
@@ -912,6 +969,9 @@
             document.getElementById('checkingBalance').innerText = `$${checkingBalance.toFixed(2)}`;
             document.getElementById('savingsBalance').innerText = `$${savingsBalance.toFixed(2)}`;
             document.getElementById('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
+            // update wallet card too
+            const opayElem = document.getElementById('opayBalance');
+            if (opayElem) opayElem.innerText = `$${totalBalance.toFixed(2)}`;
             
             // Update account numbers
             const checkingAccount = user.accounts?.checking?.accountNumber || '****0000';
@@ -928,6 +988,9 @@
             // Load transactions (combined from both accounts)
             const allTransactions = [...checkingTransactions, ...savingsTransactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             loadTransactions(allTransactions);
+            
+            // Update notification badge
+            updateNotificationBadge(user);
         }
 
         function loadTransactions(transactions) {
@@ -1023,7 +1086,8 @@
             
             // Update display
             updateBalances(user);
-            
+        }
+        
         function updateBalances(user) {
             const checkingBalance = user.accounts?.checking?.balance || 0;
             const savingsBalance = user.accounts?.savings?.balance || 0;
@@ -1033,6 +1097,12 @@
             document.getElementById('savingsBalance').innerText = `$${savingsBalance.toFixed(2)}`;
             document.getElementById('totalBalance').innerText = `$${totalBalance.toFixed(2)}`;
             
+            // Update wallet card
+            const opayElem = document.getElementById('opayBalance');
+            if (opayElem) {
+                opayElem.innerText = `$${totalBalance.toFixed(2)}`;
+            }
+
             // Update transaction count
             const checkingTransactions = user.accounts?.checking?.transactions || [];
             const savingsTransactions = user.accounts?.savings?.transactions || [];
@@ -1044,13 +1114,6 @@
             loadTransactions(allTransactions);
         }
 
-        function generateAccountNumber() {
-            let accountNumber = '';
-            for (let i = 0; i < 10; i++) {
-                accountNumber += Math.floor(Math.random() * 10);
-            }
-            return accountNumber;
-        }
 
         // Transfer Modal Functions
         function openInternalTransferModal() {
@@ -1077,11 +1140,12 @@
         }
 
         function openBillPayModal() {
-            alert('Bill Pay feature coming soon!');
+            // redirect to dedicated page instead of modal
+            window.location.href = 'billpay.html';
         }
 
         function openWireTransferModal() {
-            alert('Wire Transfer feature coming soon!');
+            window.location.href = 'wire.html';
         }
 
         function processInternalTransfer() {
@@ -1204,39 +1268,66 @@
             }
 
             const user = JSON.parse(localStorage.getItem('currentUser'));
-
-            if (user.balance < amount) {
-                alert('Insufficient balance');
+            const checking = user.accounts?.checking;
+            if (!checking || checking.balance < amount) {
+                alert('Insufficient balance in checking account');
                 return;
             }
 
-            user.balance -= amount;
-            user.transactions = user.transactions || [];
-            user.transactions.push({
+            // Deduct from checking account
+            checking.balance -= amount;
+            checking.transactions = checking.transactions || [];
+            checking.transactions.push({
                 type: 'debit',
                 amount: amount,
-                description: `Transfer to ${email}`,
-                date: new Date().toISOString()
+                description: `Transfer to ${email}` + (message ? ` (${message})` : ''),
+                timestamp: new Date().toISOString(),
+                accountType: 'checking'
             });
 
-            // Update in allUsers
+            // Update storage
             const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
             const userIndex = allUsers.findIndex(u => u.id === user.id);
             if (userIndex !== -1) {
                 allUsers[userIndex] = user;
                 localStorage.setItem('allUsers', JSON.stringify(allUsers));
             }
-
             localStorage.setItem('currentUser', JSON.stringify(user));
+
             document.getElementById('transferSuccess').classList.add('show');
-            document.getElementById('balanceDisplay').innerText = `$${user.balance.toFixed(2)}`;
-            document.getElementById('opayBalance').innerText = `$${user.balance.toFixed(2)}`;
-            document.getElementById('transactionCount').innerText = user.transactions.length;
-            loadTransactions(user.transactions);
+            updateBalances(user);
 
             setTimeout(() => {
                 closeTransferModal();
             }, 2000);
+        }
+
+        // Update notification badge with new transaction count
+        function updateNotificationBadge(user) {
+            const badge = document.getElementById('notificationBadge');
+            if (!badge) return;
+
+            // Get last viewed time from localStorage (default to 24 hours ago if not set)
+            const lastViewed = localStorage.getItem('lastTransactionViewedTime') || new Date(Date.now() - 24*60*60*1000).getTime();
+            const lastViewedTime = new Date(parseInt(lastViewed));
+
+            // Count new transactions
+            const checkingTransactions = user.accounts?.checking?.transactions || [];
+            const savingsTransactions = user.accounts?.savings?.transactions || [];
+            const allTransactions = [...checkingTransactions, ...savingsTransactions];
+
+            const newTransactionCount = allTransactions.filter(t => {
+                const transDate = new Date(t.timestamp || t.date);
+                return transDate > lastViewedTime;
+            }).length;
+
+            // Update badge
+            if (newTransactionCount > 0) {
+                badge.textContent = newTransactionCount > 9 ? '9+' : newTransactionCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
         }
 
         // Load dashboard on page load
@@ -1254,51 +1345,5 @@
             }
         }
     </script>
-</body>
-</html>
-                    Loading...
-                </div>
-            </div>
-
-            <!-- Session Info -->
-            <div style="margin-top: 40px; padding: 20px; background: #f0f7ff; border-radius: 8px; border-left: 4px solid #667eea;">
-                <h3>Session Details</h3>
-                <p id="sessionInfo" style="margin-top: 10px; color: #666;"></p>
-            </div>
-        </div>
-    </div>
-
-    <script src="auth.js"></script>
-    <script>
-        // Require login to access dashboard
-        requireLogin();
-
-        // Display user information
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = getCurrentUser();
-            
-            if (user) {
-                // Update welcome message
-                const name = user.name || user.firstName + ' ' + user.lastName || 'User';
-                const displayName2 = user.username || name || 'User';
-                document.getElementById('welcomeMessage').textContent = `Welcome back, ${displayName2}!`;
-                document.getElementById('userEmail').textContent = displayName2;
-
-                // Display account info
-                let accountHTML = '<ul style="list-style: none; padding: 0;">';
-                accountHTML += `<li style="padding: 8px 0;"><strong>Email:</strong> ${user.email}</li>`;
-                if (user.name) accountHTML += `<li style="padding: 8px 0;"><strong>Name:</strong> ${user.name}</li>`;
-                if (user.phone) accountHTML += `<li style="padding: 8px 0;"><strong>Phone:</strong> ${user.phone}</li>`;
-                accountHTML += `<li style="padding: 8px 0;"><strong>Auth Provider:</strong> ${user.authProvider || 'Email'}</li>`;
-                accountHTML += '</ul>';
-                document.getElementById('accountInfo').innerHTML = accountHTML;
-
-                // Display session info
-                const loginTime = new Date(user.loginTime || user.signupTime);
-                document.getElementById('sessionInfo').textContent = `Login time: ${loginTime.toLocaleString()}`;
-            }
-        });
-    </script>
-    <script src="app.js"></script>
 </body>
 </html>

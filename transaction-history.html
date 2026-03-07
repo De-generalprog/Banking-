@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">← Back to Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>📊 Transaction History</h1>
+            <div id="historyMessage" class="message-box"></div>
+
+            <!-- Filters -->
+            <div style="background: white; padding: 25px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">🔍 Filter Transactions</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Account</label>
+                        <select id="filterAccount" onchange="filterTransactions()">
+                            <option value="">All Accounts</option>
+                            <option value="checking">Checking</option>
+                            <option value="savings">Savings</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Transaction Type</label>
+                        <select id="filterType" onchange="filterTransactions()">
+                            <option value="">All Types</option>
+                            <option value="deposit">Deposit</option>
+                            <option value="withdrawal">Withdrawal</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="payment">Payment</option>
+                            <option value="fee">Fee</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>From Date</label>
+                        <input type="date" id="filterFromDate" onchange="filterTransactions()">
+                    </div>
+                    <div>
+                        <label>To Date</label>
+                        <input type="date" id="filterToDate" onchange="filterTransactions()">
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="filterTransactions()">Apply Filters</button>
+                    <button class="btn" onclick="resetFilters()" style="background: #95a5a6; color: white; border: none; margin-left: 10px;">Reset</button>
+                    <button class="btn" onclick="exportToCSV()" style="background: #27ae60; color: white; border: none; margin-left: 10px;">📥 Export CSV</button>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); overflow-x: auto;">
+                <h2 style="color: #333; margin-bottom: 20px;">Transactions</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #e0e0e0; background: #f9f9f9;">
+                            <th style="padding: 15px; text-align: left; color: #555; font-weight: 600;">Date</th>
+                            <th style="padding: 15px; text-align: left; color: #555; font-weight: 600;">Account</th>
+                            <th style="padding: 15px; text-align: left; color: #555; font-weight: 600;">Type</th>
+                            <th style="padding: 15px; text-align: left; color: #555; font-weight: 600;">Description</th>
+                            <th style="padding: 15px; text-align: right; color: #555; font-weight: 600;">Amount</th>
+                            <th style="padding: 15px; text-align: right; color: #555; font-weight: 600;">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+                <div id="noTransactions" style="text-align: center; padding: 40px; color: #999;">
+                    No transactions found. Try adjusting your filters.
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div id="paginationContainer" style="margin-top: 30px; text-align: center; display: none;">
+                <button class="btn" onclick="previousPage()" style="margin: 0 10px;">Previous</button>
+                <span id="pageInfo" style="margin: 0 20px; color: #666;"></span>
+                <button class="btn" onclick="nextPage()" style="margin: 0 10px;">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let allTransactions = [];
+        let filteredTransactions = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadTransactions();
+            displayTransactions();
+            
+            // Mark transactions as viewed when user visits this page
+            localStorage.setItem('lastTransactionViewedTime', Date.now().toString());
+        });
+
+        function loadTransactions() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            allTransactions = [];
+
+            // Load checking transactions with running balance
+            if (user.accounts && user.accounts.checking) {
+                let balance = 0;
+                user.accounts.checking.transactions.forEach(t => {
+                    if (t.type === 'credit' || t.type === 'Deposit' || t.type === 'deposit') {
+                        balance += t.amount;
+                    } else {
+                        balance -= t.amount;
+                    }
+                    allTransactions.push({
+                        ...t,
+                        balance: balance,
+                        account: 'Checking',
+                        accountType: 'checking'
+                    });
+                });
+            }
+
+            // Load savings transactions with running balance
+            if (user.accounts && user.accounts.savings) {
+                let balance = 0;
+                user.accounts.savings.transactions.forEach(t => {
+                    if (t.type === 'credit' || t.type === 'Deposit' || t.type === 'deposit') {
+                        balance += t.amount;
+                    } else {
+                        balance -= t.amount;
+                    }
+                    allTransactions.push({
+                        ...t,
+                        balance: balance,
+                        account: 'Savings',
+                        accountType: 'savings'
+                    });
+                });
+            }
+
+            // Sort by date descending (most recent first)
+            allTransactions.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+            filteredTransactions = [...allTransactions];
+        }
+
+        function filterTransactions() {
+            const accountFilter = document.getElementById('filterAccount').value;
+            const typeFilter = document.getElementById('filterType').value;
+            const fromDate = document.getElementById('filterFromDate').value;
+            const toDate = document.getElementById('filterToDate').value;
+
+            filteredTransactions = allTransactions.filter(t => {
+                // Account filter
+                if (accountFilter && t.accountType !== accountFilter) return false;
+
+                // Type filter
+                if (typeFilter && t.type.toLowerCase() !== typeFilter.toLowerCase()) return false;
+
+                // Date range filter
+                const transDate = new Date(t.timestamp || t.date);
+                if (fromDate && transDate < new Date(fromDate)) return false;
+                if (toDate && transDate > new Date(toDate)) return false;
+
+                return true;
+            });
+
+            currentPage = 1;
+            displayTransactions();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterAccount').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterFromDate').value = '';
+            document.getElementById('filterToDate').value = '';
+            filteredTransactions = [...allTransactions];
+            currentPage = 1;
+            displayTransactions();
+        }
+
+        function displayTransactions() {
+            const tableBody = document.getElementById('transactionsTableBody');
+            const noTransactions = document.getElementById('noTransactions');
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            if (filteredTransactions.length === 0) {
+                tableBody.innerHTML = '';
+                noTransactions.style.display = 'block';
+                paginationContainer.style.display = 'none';
+                return;
+            }
+
+            noTransactions.style.display = 'none';
+
+            // Pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+            tableBody.innerHTML = pageTransactions.map((t, index) => {
+                const isDeposit = t.type === 'Deposit' || t.type === 'deposit' || t.type === 'credit';
+                const amountColor = isDeposit ? '#27ae60' : '#e74c3c';
+                const amountSign = isDeposit ? '+' : '-';
+                const balance = t.balance !== undefined ? `$${t.balance.toFixed(2)}` : '--';
+
+                return `
+                    <tr style="border-bottom: 1px solid #e0e0e0; hover-background: #f9f9f9;">
+                        <td style="padding: 15px; color: #333;">${new Date(t.timestamp || t.date).toLocaleDateString()}</td>
+                        <td style="padding: 15px; color: #333;">${t.account}</td>
+                        <td style="padding: 15px;">
+                            <span style="background: #f0f0f0; padding: 5px 10px; border-radius: 6px; color: #555; font-size: 12px; font-weight: 600;">
+                                ${t.type}
+                            </span>
+                        </td>
+                        <td style="padding: 15px; color: #555;">${t.description}</td>
+                        <td style="padding: 15px; text-align: right; color: ${amountColor}; font-weight: 600;">
+                            ${amountSign}$${Math.abs(t.amount).toFixed(2)}
+                        </td>
+                        <td style="padding: 15px; text-align: right; color: #333;">
+                            ${balance}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Pagination info
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            if (totalPages > 1) {
+                paginationContainer.style.display = 'block';
+                document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            } else {
+                paginationContainer.style.display = 'none';
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayTransactions();
+                document.querySelector('.dashboard-content').scrollTop = 0;
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTransactions();
+                document.querySelector('.dashboard-content').scrollTop = 0;
+            }
+        }
+
+        function exportToCSV() {
+            if (filteredTransactions.length === 0) {
+                showMessage('No transactions to export', 'error', document.getElementById('historyMessage'));
+                return;
+            }
+
+            let csv = 'Date,Account,Type,Description,Amount,Balance\n';
+            
+            filteredTransactions.forEach(t => {
+                const date = new Date(t.timestamp || t.date).toLocaleDateString();
+                const amount = (t.type === 'Deposit' || t.type === 'deposit' ? '+' : '-') + Math.abs(t.amount).toFixed(2);
+                csv += `"${date}","${t.account}","${t.type}","${t.description}","${amount}","${t.balance.toFixed(2)}"\n`;
+            });
+
+            // Create blob and download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transaction-history-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            showMessage('✅ Transaction history exported as CSV', 'success', document.getElementById('historyMessage'));
+        }
+    </script>
+</body>
+</html>

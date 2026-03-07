@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Settings - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>🔒 Security Questions</h1>
+            <div id="securityMessage" class="message-box"></div>
+
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <p style="color: #666; margin-bottom: 30px;">Set up security questions to help protect and recover your account. You'll be asked to answer these if you need to verify your identity.</p>
+
+                <div id="questionsContainer"></div>
+
+                <button class="btn btn-primary" onclick="addSecurityQuestion()" style="margin-top: 20px;">+ Add Another Question</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const securityQuestionOptions = [
+            "What is your mother's maiden name?",
+            "What was the name of your first pet?",
+            "In what city were you born?",
+            "What is your favorite movie?",
+            "What was the name of your first school?",
+            "What is your favorite book?",
+            "What is your childhood nickname?",
+            "In what city did your mother and father meet?",
+            "What is the name of the street you grew up on?",
+            "What is your favorite food?"
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadSecurityQuestions();
+        });
+
+        function loadSecurityQuestions() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const questions = user.securityQuestions || [];
+            const container = document.getElementById('questionsContainer');
+            
+            container.innerHTML = '';
+
+            if (questions.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-style: italic;">No security questions set yet. Add your first one below.</p>';
+                return;
+            }
+
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-radius: 12px; border-left: 4px solid #667eea;';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <label style="font-weight: 600; color: #333; display: block; margin-bottom: 8px;">Question ${index + 1}</label>
+                            <select id="question-${index}" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                                ${securityQuestionOptions.map(opt => `<option value="${opt}" ${opt === q.question ? 'selected' : ''}>${opt}</option>`).join('')}
+                            </select>
+                            <label style="font-weight: 600; color: #333; display: block; margin-bottom: 8px;">Your Answer</label>
+                            <input type="text" id="answer-${index}" value="${q.answer}" placeholder="Enter your answer" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                        </div>
+                        <button class="btn" onclick="deleteSecurityQuestion(${index})" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; margin-left: 15px;">Delete</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'btn btn-primary';
+            saveBtn.textContent = '💾 Save Security Questions';
+            saveBtn.onclick = saveSecurityQuestions;
+            saveBtn.style.marginTop = '20px';
+            container.appendChild(saveBtn);
+        }
+
+        function addSecurityQuestion() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user.securityQuestions) {
+                user.securityQuestions = [];
+            }
+
+            if (user.securityQuestions.length >= 5) {
+                showMessage('You can only set up to 5 security questions', 'error', document.getElementById('securityMessage'));
+                return;
+            }
+
+            user.securityQuestions.push({ question: securityQuestionOptions[0], answer: '' });
+            updateCurrentUser(user);
+            loadSecurityQuestions();
+        }
+
+        function deleteSecurityQuestion(index) {
+            if (confirm('Are you sure you want to delete this security question?')) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                user.securityQuestions.splice(index, 1);
+                updateCurrentUser(user);
+                loadSecurityQuestions();
+                showMessage('Security question deleted', 'success', document.getElementById('securityMessage'));
+            }
+        }
+
+        function saveSecurityQuestions() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const questions = user.securityQuestions || [];
+            const msgBox = document.getElementById('securityMessage');
+
+            let isValid = true;
+            questions.forEach((q, index) => {
+                const question = document.getElementById(`question-${index}`).value;
+                const answer = document.getElementById(`answer-${index}`).value.trim();
+
+                if (!answer) {
+                    isValid = false;
+                    showMessage(`Please provide an answer for Question ${index + 1}`, 'error', msgBox);
+                }
+
+                questions[index].question = question;
+                questions[index].answer = answer;
+            });
+
+            if (!isValid) {
+                return;
+            }
+
+            user.securityQuestions = questions;
+            updateCurrentUser(user);
+            showMessage('Security questions updated successfully! ✅', 'success', msgBox);
+        }
+    </script>
+</body>
+</html>

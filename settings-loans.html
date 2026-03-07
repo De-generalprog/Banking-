@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Settings - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>💰 Loan Settings</h1>
+            <div id="loanMessage" class="message-box"></div>
+
+            <!-- Active Loans -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Active Loans</h2>
+                <div id="loansContainer"></div>
+            </div>
+
+            <!-- Loan Preferences -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">🎯 Loan Preferences</h2>
+                <p style="color: #666; margin-bottom: 20px;">Choose which type of loan offers you'd like to see.</p>
+
+                <div id="loanPreferencesContainer"></div>
+            </div>
+
+            <!-- Loan Settings -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">⚙️ Loan Settings</h2>
+
+                <div class="form-group">
+                    <label>Preferred Loan Amount Range</label>
+                    <select id="loanAmount">
+                        <option value="">Select preferred amount</option>
+                        <option value="5000-10000">$5,000 - $10,000</option>
+                        <option value="10000-25000">$10,000 - $25,000</option>
+                        <option value="25000-50000">$25,000 - $50,000</option>
+                        <option value="50000-100000">$50,000 - $100,000</option>
+                        <option value="100000+">$100,000+</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Loan Term</label>
+                    <select id="loanTerm">
+                        <option value="">Select preferred term</option>
+                        <option value="12">12 months</option>
+                        <option value="24">24 months</option>
+                        <option value="36">36 months</option>
+                        <option value="48">48 months</option>
+                        <option value="60">60 months</option>
+                    </select>
+                </div>
+
+                <div style="padding: 20px; background: #f0f8ff; border-radius: 12px; margin: 20px 0; border-left: 4px solid #667eea;">
+                    <label style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <input type="checkbox" id="autoPayment" style="margin-right: 10px;">
+                        <span style="color: #333;">Enable Automatic Loan Payments</span>
+                    </label>
+                    <small style="color: #666;">Set up automatic transfers from your checking account for loan payments</small>
+                </div>
+
+                <div style="padding: 20px; background: #fff0f0; border-radius: 12px; margin: 20px 0; border-left: 4px solid #e74c3c;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="checkbox" id="disableLoanOffers" style="margin-right: 10px;">
+                        <span style="color: #333;">Disable Loan Offers</span>
+                    </label>
+                    <small style="color: #666;">Stop seeing loan offers and recommendations</small>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button class="btn btn-primary" onclick="saveLoanSettings()" style="width: 100%; padding: 15px; font-size: 16px;">Save Loan Settings</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const loanTypes = [
+            { id: 'personal', label: 'Personal Loan', description: 'Flexible unsecured loans for any purpose' },
+            { id: 'auto', label: 'Auto Loan', description: 'Loans for vehicle purchases' },
+            { id: 'home', label: 'Home Loan', description: 'Mortgages and home equity loans' },
+            { id: 'student', label: 'Student Loan', description: 'Education financing options' },
+            { id: 'business', label: 'Business Loan', description: 'Loans for business needs' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadLoanSettings();
+            renderLoanPreferences();
+            loadActiveLoans();
+        });
+
+        function loadActiveLoans() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const loans = user.loans || [];
+            const container = document.getElementById('loansContainer');
+
+            container.innerHTML = '';
+
+            if (loans.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-style: italic;">No active loans.</p>';
+                return;
+            }
+
+            loans.forEach((loan, index) => {
+                const remaining = loan.totalAmount - loan.paidAmount;
+                const progressPercent = (loan.paidAmount / loan.totalAmount) * 100;
+
+                const loanDiv = document.createElement('div');
+                loanDiv.style.cssText = 'background: #f9f9f9; padding: 20px; margin-bottom: 20px; border-radius: 12px; border-left: 4px solid #667eea;';
+                loanDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                        <div>
+                            <h3 style="margin: 0 0 5px 0; color: #333;">${loan.type} Loan</h3>
+                            <small style="color: #666;">Loan #${loan.loanId}</small>
+                        </div>
+                        <span style="background: #667eea; color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;">APR: ${loan.apr}%</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <small style="color: #666;">Original Amount</small>
+                            <div style="font-size: 18px; font-weight: 600; color: #333;">$${loan.totalAmount.toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">Remaining Balance</small>
+                            <div style="font-size: 18px; font-weight: 600; color: #e74c3c;">$${remaining.toLocaleString()}</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">Next Payment</small>
+                            <div style="font-size: 14px; color: #333;">${loan.nextPaymentDate}</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">Monthly Payment</small>
+                            <div style="font-size: 14px; color: #333;">$${loan.monthlyPayment.toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <div style="width: 100%; background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: ${progressPercent}%;"></div>
+                    </div>
+                    <small style="color: #666; display: block; margin-top: 5px;">${progressPercent.toFixed(1)}% paid</small>
+
+                    <button class="btn" onclick="viewLoanDetails(${index})" style="margin-top: 15px; background: #667eea; color: white; border: none; padding: 8px 15px; cursor: pointer;">View Details</button>
+                `;
+                container.appendChild(loanDiv);
+            });
+        }
+
+        function renderLoanPreferences() {
+            const container = document.getElementById('loanPreferencesContainer');
+            container.innerHTML = '';
+
+            loanTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; padding: 15px; margin-bottom: 15px; background: #f9f9f9; border-radius: 12px; border-left: 4px solid #667eea;';
+                div.innerHTML = `
+                    <input type="checkbox" id="loan-${type.id}" style="width: 20px; height: 20px; cursor: pointer; margin-right: 15px;">
+                    <div style="flex: 1;">
+                        <label for="loan-${type.id}" style="font-weight: 600; color: #333; cursor: pointer; display: block;">${type.label}</label>
+                        <small style="color: #666;">${type.description}</small>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function loadLoanSettings() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const settings = user.loanSettings || {};
+
+            document.getElementById('loanAmount').value = settings.preferredAmount || '';
+            document.getElementById('loanTerm').value = settings.preferredTerm || '';
+            document.getElementById('autoPayment').checked = settings.autoPayment || false;
+            document.getElementById('disableLoanOffers').checked = settings.disableOffers || false;
+
+            loanTypes.forEach(type => {
+                const checkbox = document.getElementById(`loan-${type.id}`);
+                if (checkbox) {
+                    checkbox.checked = settings[`prefer${type.id.charAt(0).toUpperCase()}${type.id.slice(1)}`] || false;
+                }
+            });
+        }
+
+        function saveLoanSettings() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const msgBox = document.getElementById('loanMessage');
+
+            const settings = {
+                preferredAmount: document.getElementById('loanAmount').value,
+                preferredTerm: document.getElementById('loanTerm').value,
+                autoPayment: document.getElementById('autoPayment').checked,
+                disableOffers: document.getElementById('disableLoanOffers').checked
+            };
+
+            loanTypes.forEach(type => {
+                const checkbox = document.getElementById(`loan-${type.id}`);
+                settings[`prefer${type.id.charAt(0).toUpperCase()}${type.id.slice(1)}`] = checkbox.checked;
+            });
+
+            user.loanSettings = settings;
+            updateCurrentUser(user);
+            showMessage('Loan settings saved successfully! ✅', 'success', msgBox);
+        }
+
+        function viewLoanDetails(index) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const loan = user.loans[index];
+            alert(`Loan ${loan.loanId}\nType: ${loan.type}\nAmount: $${loan.totalAmount}\nAPR: ${loan.apr}%\nMaturity Date: ${loan.maturityDate}`);
+        }
+    </script>
+</body>
+</html>

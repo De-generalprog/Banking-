@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Settings - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>🔔 Alert & Notification Settings</h1>
+            <div id="alertMessage" class="message-box"></div>
+
+            <!-- Contact Information -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">📧 Contact Information</h2>
+                <div class="form-group">
+                    <label>Alert Email Address</label>
+                    <input type="email" id="alertEmail" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Alert Phone Number (SMS)</label>
+                    <input type="tel" id="alertPhone" placeholder="(123) 456-7890">
+                </div>
+            </div>
+
+            <!-- Alert Types -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Alert Types</h2>
+                <p style="color: #666; margin-bottom: 25px;">Enable the alerts you'd like to receive via email and/or SMS. These alerts apply to both email and SMS.</p>
+
+                <div id="alertTypesContainer">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+
+            <!-- Test Alerts -->
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">📬 Test Alerts</h2>
+                <p style="color: #666; margin-bottom: 20px;">Send a test notification to verify your contact information works correctly.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="sendTestEmail()">Send Test Email</button>
+                    <button class="btn btn-primary" onclick="sendTestSMS()">Send Test SMS</button>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button class="btn btn-primary" onclick="saveAlertSettings()" style="margin-top: 30px; width: 100%; padding: 15px; font-size: 16px;">Save Alert Settings</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        const alertTypes = [
+            { id: 'transaction', label: 'Transaction Alerts', description: 'Alerts for deposits, withdrawals, and transfers' },
+            { id: 'login', label: 'Login Alerts', description: 'Alerts when your account is accessed' },
+            { id: 'security', label: 'Security Alerts', description: 'Alerts for password changes and suspicious activity' },
+            { id: 'bill', label: 'Bill Pay Alerts', description: 'Alerts for bill payments and due dates' },
+            { id: 'balance', label: 'Low Balance Alerts', description: 'Alerts when balance falls below a threshold' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadAlertSettings();
+            renderAlertTypes();
+        });
+
+        function loadAlertSettings() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const alerts = user.alerts || {};
+
+            document.getElementById('alertEmail').value = alerts.email || '';
+            document.getElementById('alertPhone').value = alerts.phone || '';
+
+            alertTypes.forEach(type => {
+                const checkbox = document.getElementById(`alert-${type.id}`);
+                if (checkbox) {
+                    checkbox.checked = alerts[type.id] || false;
+                }
+            });
+        }
+
+        function renderAlertTypes() {
+            const container = document.getElementById('alertTypesContainer');
+            container.innerHTML = '';
+
+            alertTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; padding: 15px; margin-bottom: 15px; background: #f9f9f9; border-radius: 12px; border-left: 4px solid #667eea;';
+                div.innerHTML = `
+                    <input type="checkbox" id="alert-${type.id}" style="width: 20px; height: 20px; cursor: pointer; margin-right: 15px;">
+                    <div style="flex: 1;">
+                        <label for="alert-${type.id}" style="font-weight: 600; color: #333; cursor: pointer; display: block; margin-bottom: 4px;">${type.label}</label>
+                        <small style="color: #666;">${type.description}</small>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function sendTestEmail() {
+            const email = document.getElementById('alertEmail').value.trim();
+            const msgBox = document.getElementById('alertMessage');
+
+            if (!email) {
+                showMessage('Please enter an email address first', 'error', msgBox);
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showMessage('Please enter a valid email address', 'error', msgBox);
+                return;
+            }
+
+            // Simulate sending email
+            showMessage(`✅ Test email sent to ${email}. Check your inbox!`, 'success', msgBox);
+        }
+
+        function sendTestSMS() {
+            const phone = document.getElementById('alertPhone').value.trim();
+            const msgBox = document.getElementById('alertMessage');
+
+            if (!phone) {
+                showMessage('Please enter a phone number first', 'error', msgBox);
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showMessage('Please enter a valid 10-digit phone number', 'error', msgBox);
+                return;
+            }
+
+            // Simulate sending SMS
+            showMessage(`✅ Test SMS sent to ${phone}. Check your messages!`, 'success', msgBox);
+        }
+
+        function saveAlertSettings() {
+            const email = document.getElementById('alertEmail').value.trim();
+            const phone = document.getElementById('alertPhone').value.trim();
+            const msgBox = document.getElementById('alertMessage');
+
+            if (!email && !phone) {
+                showMessage('Please provide at least one contact method (email or phone)', 'error', msgBox);
+                return;
+            }
+
+            if (email && !validateEmail(email)) {
+                showMessage('Please enter a valid email address', 'error', msgBox);
+                return;
+            }
+
+            if (phone && !validatePhone(phone)) {
+                showMessage('Please enter a valid phone number', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const alerts = {
+                email: email,
+                phone: phone
+            };
+
+            // Add alert types to the alerts object
+            alertTypes.forEach(type => {
+                const checkbox = document.getElementById(`alert-${type.id}`);
+                alerts[type.id] = checkbox.checked;
+            });
+
+            user.alerts = alerts;
+            updateCurrentUser(user);
+            showMessage('Alert settings saved successfully! ✅', 'success', msgBox);
+        }
+
+        function validatePhone(phone) {
+            // Remove common phone formatting characters
+            const cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
+            return /^\d{10}$/.test(cleaned);
+        }
+    </script>
+</body>
+</html>

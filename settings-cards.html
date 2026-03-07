@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Management - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>💳 Card Management</h1>
+            <div id="cardMessage" class="message-box"></div>
+
+            <!-- Active Cards -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Your Cards</h2>
+                <div id="cardsContainer"></div>
+            </div>
+
+            <!-- Request New Card -->
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Request New Card</h2>
+                <p style="color: #666; margin-bottom: 20px;">Request a replacement card, upgrade, or additional debit card.</p>
+                <div class="form-group">
+                    <label>Card Type</label>
+                    <select id="cardType">
+                        <option value="debit">Debit Card</option>
+                        <option value="credit">Credit Card</option>
+                        <option value="prepaid">Prepaid Card</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reason for Request</label>
+                    <select id="cardReason">
+                        <option value="replacement">Replacement (Lost/Damaged)</option>
+                        <option value="upgrade">Upgrade Card</option>
+                        <option value="additional">Additional Card</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="requestCard()">Request New Card</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadCards();
+        });
+
+        function loadCards() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const cards = user.cards || [];
+            const container = document.getElementById('cardsContainer');
+
+            container.innerHTML = '';
+
+            if (cards.length === 0) {
+                container.innerHTML = '<p style="color: #999; font-style: italic;">No cards on record. Request a new card below.</p>';
+                return;
+            }
+
+            cards.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; position: relative; overflow: hidden;';
+                
+                const cardHTML = `
+                    <div style="position: relative; z-index: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 25px;">
+                            <div>
+                                <small style="opacity: 0.8; display: block; margin-bottom: 8px;">CARD NUMBER</small>
+                                <div style="font-size: 20px; letter-spacing: 2px;">•••• •••• •••• ${card.last4}</div>
+                            </div>
+                            <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;">${card.type.toUpperCase()}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: end;">
+                            <div>
+                                <small style="opacity: 0.8; display: block;">CARD HOLDER</small>
+                                <div>${card.holderName || 'Your Name'}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <small style="opacity: 0.8; display: block;">VALID THRU</small>
+                                <div>${card.expiry || '12/26'}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            ${!card.isBlocked ? `<button class="btn" onclick="blockCard(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Block Card</button>` : `<button class="btn" onclick="unblockCard(${index})" style="background: #27ae60; color: white; border: none; padding: 8px 15px; cursor: pointer;">Unblock Card</button>`}
+                            <button class="btn" onclick="setAsPrimary(${index})" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 15px; cursor: pointer;">Set as Primary</button>
+                            <button class="btn" onclick="deleteCard(${index})" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; cursor: pointer;">Delete</button>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <small>Status: <strong>${card.isBlocked ? '🔴 Blocked' : '🟢 Active'}</strong> ${card.isPrimary ? '⭐ Primary' : ''}</small>
+                        </div>
+                    </div>
+                `;
+                
+                cardDiv.innerHTML = cardHTML;
+                container.appendChild(cardDiv);
+            });
+        }
+
+        function blockCard(index) {
+            if (confirm('Are you sure you want to block this card? You won\'t be able to use it until you unblock it.')) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                user.cards[index].isBlocked = true;
+                updateCurrentUser(user);
+                loadCards();
+                showMessage('Card blocked successfully. ✅', 'success', document.getElementById('cardMessage'));
+            }
+        }
+
+        function unblockCard(index) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            user.cards[index].isBlocked = false;
+            updateCurrentUser(user);
+            loadCards();
+            showMessage('Card unblocked successfully. ✅', 'success', document.getElementById('cardMessage'));
+        }
+
+        function setAsPrimary(index) {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            user.cards.forEach(card => card.isPrimary = false);
+            user.cards[index].isPrimary = true;
+            updateCurrentUser(user);
+            loadCards();
+            showMessage('Primary card updated. ✅', 'success', document.getElementById('cardMessage'));
+        }
+
+        function deleteCard(index) {
+            if (confirm('Are you sure you want to delete this card?')) {
+                const user = JSON.parse(localStorage.getItem('currentUser'));
+                user.cards.splice(index, 1);
+                updateCurrentUser(user);
+                loadCards();
+                showMessage('Card deleted. ✅', 'success', document.getElementById('cardMessage'));
+            }
+        }
+
+        function requestCard() {
+            const cardType = document.getElementById('cardType').value;
+            const reason = document.getElementById('cardReason').value;
+            const msgBox = document.getElementById('cardMessage');
+
+            if (!cardType || !reason) {
+                showMessage('Please select card type and reason', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user.cards) user.cards = [];
+
+            // Simulate new card (in real app, this would go through approval)
+            const last4 = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            const newCard = {
+                type: cardType,
+                last4: last4,
+                holderName: `${user.firstName} ${user.lastName}`,
+                expiry: '12/26',
+                isBlocked: false,
+                isPrimary: user.cards.length === 0,
+                requestReason: reason,
+                requestDate: new Date().toLocaleDateString()
+            };
+
+            user.cards.push(newCard);
+            updateCurrentUser(user);
+            loadCards();
+
+            showMessage(`✅ ${cardType.charAt(0).toUpperCase() + cardType.slice(1)} card requested successfully! It will arrive in 5-7 business days.`, 'success', msgBox);
+            document.getElementById('cardType').value = 'debit';
+            document.getElementById('cardReason').value = 'replacement';
+        }
+    </script>
+</body>
+</html>

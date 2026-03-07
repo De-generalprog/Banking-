@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Settings - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>💳 Payment Settings</h1>
+            <div id="paymentMessage" class="message-box"></div>
+
+            <!-- Change PIN Section -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Change PIN</h2>
+                <div class="form-group">
+                    <label>Current PIN</label>
+                    <input type="password" id="currentPin" placeholder="Enter current PIN" maxlength="4">
+                </div>
+                <div class="form-group">
+                    <label>New PIN (4 digits)</label>
+                    <input type="password" id="newPin" placeholder="Enter new PIN" maxlength="4">
+                </div>
+                <div class="form-group">
+                    <label>Confirm PIN</label>
+                    <input type="password" id="confirmPin" placeholder="Confirm new PIN" maxlength="4">
+                </div>
+                <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
+            </div>
+
+            <!-- Payment Methods Section -->
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Payment Methods</h2>
+                <button class="btn btn-primary" onclick="addPaymentMethod()">Add New Payment Method</button>
+                
+                <div id="paymentMethods" style="margin-top: 20px;">
+                    <!-- Payment methods will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadPaymentMethods();
+        });
+
+        function changePin() {
+            const current = document.getElementById('currentPin').value;
+            const newPin = document.getElementById('newPin').value;
+            const confirm = document.getElementById('confirmPin').value;
+            const msgBox = document.getElementById('paymentMessage');
+
+            if (!current || !newPin || !confirm) {
+                showMessage('Please fill in all PIN fields', 'error', msgBox);
+                return;
+            }
+
+            if (newPin !== confirm) {
+                showMessage('New PIN does not match confirmation', 'error', msgBox);
+                return;
+            }
+
+            if (!/^\d{4}$/.test(newPin)) {
+                showMessage('PIN must be exactly 4 digits', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const pin = (user.pin || '1234');
+
+            if (current !== pin) {
+                showMessage('Current PIN is incorrect', 'error', msgBox);
+                return;
+            }
+
+            user.pin = newPin;
+            updateCurrentUser(user);
+
+            showMessage('PIN updated successfully! ✅', 'success', msgBox);
+            document.getElementById('currentPin').value = '';
+            document.getElementById('newPin').value = '';
+            document.getElementById('confirmPin').value = '';
+        }
+
+        function loadPaymentMethods() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const methods = user.paymentMethods || [
+                { id: 1, type: 'Checking Account', last4: '0000', primary: true }
+            ];
+            user.paymentMethods = methods;
+            updateCurrentUser(user);
+
+            const container = document.getElementById('paymentMethods');
+            container.innerHTML = methods.map(m => `
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${m.type}</strong><br/>
+                        <small style="color: #666;">****${m.last4}</small>
+                        ${m.primary ? '<small style="color: #667eea; font-weight: 600;"> • Primary</small>' : ''}
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 8px 16px;" onclick="removePaymentMethod(${m.id})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function addPaymentMethod() {
+            const msgBox = document.getElementById('paymentMessage');
+            const type = prompt('Enter payment method type (Credit Card, Debit Card, Bank Account):');
+            const last4 = prompt('Enter last 4 digits:');
+
+            if (!type || !last4 || last4.length !== 4) {
+                showMessage('Invalid payment method details', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            user.paymentMethods = user.paymentMethods || [];
+            user.paymentMethods.push({
+                id: Date.now(),
+                type: type,
+                last4: last4,
+                primary: false
+            });
+
+            updateCurrentUser(user);
+            showMessage('Payment method added! ✅', 'success', msgBox);
+            loadPaymentMethods();
+        }
+
+        function removePaymentMethod(id) {
+            if (!confirm('Remove this payment method?')) return;
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            user.paymentMethods = user.paymentMethods.filter(m => m.id !== id);
+            updateCurrentUser(user);
+
+            loadPaymentMethods();
+        }
+    </script>
+</body>
+</html>

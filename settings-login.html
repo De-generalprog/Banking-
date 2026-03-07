@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Settings - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="settings.html">← Back to Settings</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>🔐 Login Settings</h1>
+            <div id="loginMessage" class="message-box"></div>
+
+            <!-- Change Username -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Change Username</h2>
+                <div class="form-group">
+                    <label>Current Username</label>
+                    <input type="text" id="currentUsername" readonly style="background: #f0f0f0;">
+                </div>
+                <div class="form-group">
+                    <label>New Username</label>
+                    <input type="text" id="newUsername" placeholder="3-20 characters">
+                </div>
+                <button class="btn btn-primary" onclick="changeUsername()">Update Username</button>
+            </div>
+
+            <!-- Change Email -->
+            <div style="background: white; padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Change Email</h2>
+                <div class="form-group">
+                    <label>Current Email</label>
+                    <input type="email" id="currentEmail" readonly style="background: #f0f0f0;">
+                </div>
+                <div class="form-group">
+                    <label>New Email</label>
+                    <input type="email" id="newEmail" placeholder="your@email.com">
+                </div>
+                <button class="btn btn-primary" onclick="changeEmail()">Update Email</button>
+            </div>
+
+            <!-- Change Password -->
+            <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                <h2 style="color: #333; margin-bottom: 20px;">Change Password</h2>
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter your current password">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="newPassword" placeholder="At least 8 characters">
+                    <small style="color: #666;">Must contain uppercase, lowercase, and numbers</small>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                </div>
+                <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+            loadCurrentInfo();
+        });
+
+        function loadCurrentInfo() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            document.getElementById('currentUsername').value = user.username || '';
+            document.getElementById('currentEmail').value = user.email || '';
+        }
+
+        function changeUsername() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            const msgBox = document.getElementById('loginMessage');
+
+            if (!newUsername) {
+                showMessage('Please enter a new username', 'error', msgBox);
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]{3,20}$/.test(newUsername)) {
+                showMessage('Username must be 3–20 characters (letters, numbers, underscore)', 'error', msgBox);
+                return;
+            }
+
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            if (allUsers.some(u => u.username === newUsername && u.email !== JSON.parse(localStorage.getItem('currentUser')).email)) {
+                showMessage('This username is already taken', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const userIndex = allUsers.findIndex(u => u.email === user.email);
+            
+            user.username = newUsername;
+            updateCurrentUser(user);
+
+            if (userIndex !== -1) {
+                allUsers[userIndex].username = newUsername;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            showMessage('Username updated successfully! ✅', 'success', msgBox);
+            loadCurrentInfo();
+            document.getElementById('newUsername').value = '';
+        }
+
+        function changeEmail() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const msgBox = document.getElementById('loginMessage');
+
+            if (!newEmail) {
+                showMessage('Please enter a new email', 'error', msgBox);
+                return;
+            }
+
+            if (!validateEmail(newEmail)) {
+                showMessage('Please enter a valid email address', 'error', msgBox);
+                return;
+            }
+
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            if (allUsers.some(u => u.email === newEmail)) {
+                showMessage('This email is already in use', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const userIndex = allUsers.findIndex(u => u.email === user.email);
+
+            user.email = newEmail;
+            updateCurrentUser(user);
+
+            if (userIndex !== -1) {
+                allUsers[userIndex].email = newEmail;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            showMessage('Email updated successfully! ✅', 'success', msgBox);
+            loadCurrentInfo();
+            document.getElementById('newEmail').value = '';
+        }
+
+        function changePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const msgBox = document.getElementById('loginMessage');
+
+            if (!current || !newPass || !confirm) {
+                showMessage('Please fill in all password fields', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+            const userRecord = allUsers.find(u => u.email === user.email);
+
+            if (!userRecord || userRecord.password !== current) {
+                showMessage('Current password is incorrect', 'error', msgBox);
+                return;
+            }
+
+            if (newPass !== confirm) {
+                showMessage('New password does not match confirmation', 'error', msgBox);
+                return;
+            }
+
+            if (!validatePassword(newPass)) {
+                showMessage('Password must be at least 8 characters with uppercase, lowercase, and numbers', 'error', msgBox);
+                return;
+            }
+
+            userRecord.password = newPass;
+            const userIndex = allUsers.findIndex(u => u.email === user.email);
+            if (userIndex !== -1) {
+                allUsers[userIndex] = userRecord;
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            showMessage('Password updated successfully! ✅', 'success', msgBox);
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+    </script>
+</body>
+</html>

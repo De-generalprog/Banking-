@@ -827,6 +827,16 @@ a {
     font-size: 18px;
 }
 
+.ai-option {
+    color: #667eea;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ai-option:hover {
+    color: #5568d3;
+}
+
 .capabilities-list {
     display: flex;
     flex-wrap: wrap;

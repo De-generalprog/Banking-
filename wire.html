@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wire Transfer - Community Financial Credit Union</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Community Financial Credit Union</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">← Back to Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <h1>Wire Transfer</h1>
+            <div id="wireMessage" class="message-box"></div>
+            <div class="form-group">
+                <label>Recipient Name</label>
+                <input type="text" id="wireRecipientName" placeholder="Full name">
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="wireAccountNumber" placeholder="1234567890">
+            </div>
+            <div class="form-group">
+                <label>Routing Number</label>
+                <input type="text" id="wireRoutingNumber" placeholder="9-digit routing">
+            </div>
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="wireAmount" placeholder="0.00" min="0.01" step="0.01">
+            </div>
+            <button class="btn btn-primary" id="wireSubmit">Send Wire</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            requireLogin();
+        });
+
+        document.getElementById('wireSubmit').addEventListener('click', function() {
+            const name = document.getElementById('wireRecipientName').value.trim();
+            const acct = document.getElementById('wireAccountNumber').value.trim();
+            const routing = document.getElementById('wireRoutingNumber').value.trim();
+            const amount = parseFloat(document.getElementById('wireAmount').value);
+            const msgBox = document.getElementById('wireMessage');
+
+            if (!name || !acct || !routing || !amount || amount <= 0) {
+                showMessage('Please fill in all fields correctly', 'error', msgBox);
+                return;
+            }
+
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            const checking = user.accounts?.checking;
+            if (!checking || checking.balance < amount) {
+                showMessage('Insufficient funds in checking account', 'error', msgBox);
+                return;
+            }
+
+            checking.balance -= amount;
+            checking.transactions.push({
+                type: 'debit',
+                amount: amount,
+                description: `Wire to ${name} (${acct})`,
+                timestamp: new Date().toISOString(),
+                accountType: 'checking'
+            });
+
+            updateCurrentUser(user);
+            showMessage('Wire sent successfully! ✅', 'success', msgBox);
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

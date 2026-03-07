@@ -20,8 +20,10 @@ Community Financial Credit Union is a modern, secure banking application built w
 - ✅ **Account Management**: Separate balances and transactions for each account
 - ✅ **Internal Transfers**: Move money between your checking and savings accounts
 - ✅ **External Transfers**: Send money to other accounts with routing numbers
-- ✅ **Bill Pay**: Automated bill payment system (coming soon)
-- ✅ **Wire Transfers**: International money transfers (coming soon)
+- ✅ **Mobile Deposit**: Deposit checks via mobile interface
+- ✅ **Bill Pay**: Automated bill payment system
+- ✅ **Wire Transfers**: International money transfers
+- ✅ **ACH Transfers**: Send money using the ACH network
 - ✅ **User Profile**: Display user information including name, email, phone, and age
 - ✅ **Dashboard**: Attractive, modern dashboard with account cards and statistics
 - ✅ **Dual Account System**: Separate checking and savings accounts
